@@ -7,7 +7,7 @@
 # OBJETIVOS DE ESTA FASE:
 # 1. Preprocesar abstracts (limpieza, tokenización, stemming)
 # 2. Extraer keywords mediante TF-IDF (solucionar problema de 60% sin keywords)
-# 3. Realizar topic modeling con LDA (k óptimo entre 6-10)
+# 3. Perform topic modeling with LDA (optimal k between 6-10)
 # 4. Generar 7 visualizaciones temáticas innovadoras
 # 5. Crear tablas de resumen y validación
 #
@@ -90,13 +90,13 @@ cat("   - Documentos sin abstract:", nrow(M) - nrow(df_trabajo), "\n\n")
 # 3. PREPROCESAMIENTO DE TEXTO (NLP)
 # ==============================================================================
 
-cat("PASO 1: Preprocesamiento de abstracts...\n")
+cat("STEP 1: Preprocessing abstracts...\n")
 
 # Crear corpus desde abstracts
 corpus <- Corpus(VectorSource(df_trabajo$abstract))
-cat("   - Corpus creado con", length(corpus), "documentos\n")
+cat("   - Corpus created with", length(corpus), "documents\n")
 
-# Stopwords personalizadas
+# Custom stopwords
 custom_stopwords <- c(
   # Palabras académicas comunes
   "study", "research", "paper", "article", "journal", "results", "findings",
@@ -145,13 +145,13 @@ dir.create("data/processed", recursive = TRUE, showWarnings = FALSE)
 saveRDS(corpus_clean, "data/processed/corpus_cleaned.rds")
 saveRDS(dtm_filtered, "data/processed/dtm_filtered.rds")
 
-cat("Preprocesamiento completado\n\n")
+cat("Preprocessing completed\n\n")
 
 # ==============================================================================
 # 4. EXTRACCIÓN DE KEYWORDS CON TF-IDF
 # ==============================================================================
 
-cat("PASO 2: Extracción de keywords con TF-IDF...\n")
+cat("STEP 2: Extracting keywords with TF-IDF...\n")
 
 # Calcular TF-IDF
 dtm_tfidf <- weightTfIdf(dtm_filtered)
@@ -200,7 +200,7 @@ cat("   - Cobertura:", coverage_stats$Porcentaje[1], "% →", coverage_stats$Por
 # 5. TOPIC MODELING CON LDA
 # ==============================================================================
 
-cat("PASO 3: Topic Modeling con LDA...\n")
+cat("STEP 3: Topic Modeling with LDA...\n")
 
 # 5.1 Optimización del número de topics
 cat("   Optimizando número de topics (esto toma varios minutos)...\n")
@@ -225,9 +225,9 @@ png("outputs/figuras/tematicas/00_lda_optimization_metrics.png",
 FindTopicsNumber_plot(result_k)
 dev.off()
 
-# Seleccionar k óptimo (minimizar CaoJuan y Arun)
+# Select optimal k (minimize CaoJuan and Arun)
 optimal_k <- result_k$topics[which.min(result_k$CaoJuan2009)]
-cat("   Número óptimo de topics: k =", optimal_k, "\n\n")
+cat("   Optimal number of topics: k =", optimal_k, "\n\n")
 
 # 5.2 Entrenar modelo LDA final
 cat("   Entrenando modelo LDA final...\n")
@@ -302,9 +302,9 @@ topic_descriptions <- data.frame(
 )
 write.csv(topic_descriptions, "outputs/tablas/07_topics_descripcion.csv", row.names = FALSE)
 
-cat("Topic Modeling completado\n")
-cat("   - Topics identificados:", optimal_k, "\n")
-cat("   - Documentos asignados:", nrow(df_trabajo), "\n\n")
+cat("Topic Modeling completed\n")
+cat("   - Topics identified:", optimal_k, "\n")
+cat("   - Documents assigned:", nrow(df_trabajo), "\n\n")
 
 # Guardar dataset enriquecido
 write.csv(df_trabajo, "data/processed/datos_con_topics_y_keywords.csv", row.names = FALSE)
@@ -314,7 +314,7 @@ saveRDS(df_trabajo, "data/processed/datos_con_topics_y_keywords.rds")
 # 6. VISUALIZACIONES TEMÁTICAS
 # ==============================================================================
 
-cat("PASO 4: Generando visualizaciones temáticas...\n\n")
+cat("STEP 4: Generating thematic visualizations...\n\n")
 
 # Configurar tema
 theme_publication <- theme_minimal() +
@@ -330,8 +330,8 @@ theme_set(theme_publication)
 # Paleta de colores
 palette_topics <- viridis(optimal_k, option = "D")
 
-# -------- VISUALIZACIÓN 1: Topics Heatmap Temporal --------
-cat("   Generando visualización 1/7: Topics Heatmap Temporal...\n")
+# -------- VISUALIZATION 1: Topics Heatmap Temporal --------
+cat("   Generating visualization 1/7: Topics Heatmap Temporal...\n")
 
 topics_by_year <- df_trabajo %>%
   group_by(year_clean, topic_label) %>%
@@ -342,25 +342,25 @@ topics_by_year <- df_trabajo %>%
 
 p1 <- ggplot(topics_by_year, aes(x = year_clean, y = topic_label, fill = pct)) +
   geom_tile(color = "white", size = 0.5) +
-  scale_fill_viridis_c(option = "plasma", name = "% Documentos") +
+  scale_fill_viridis_c(option = "plasma", name = "% Documents") +
   scale_x_continuous(breaks = seq(2016, 2026, 1)) +
   labs(
-    title = "Evolución Temporal de Topics (2016-2026)",
-    subtitle = paste(nrow(df_trabajo), "documentos |", optimal_k, "topics"),
-    x = "Año", y = NULL
+    title = "Temporal Evolution of Topics (2016-2026)",
+    subtitle = paste(nrow(df_trabajo), "documents |", optimal_k, "topics"),
+    x = "Year", y = NULL
   )
 
 ggsave("outputs/figuras/tematicas/01_topics_heatmap_temporal.png", p1,
        width = 12, height = 6, dpi = 300, bg = "white")
 
-# -------- VISUALIZACIÓN 2: Alluvial Diagram --------
-cat("   Generando visualización 2/7: Alluvial Diagram...\n")
+# -------- VISUALIZATION 2: Alluvial Diagram --------
+cat("   Generating visualization 2/7: Alluvial Diagram...\n")
 
 df_trabajo <- df_trabajo %>%
   mutate(
     periodo = case_when(
       year_clean >= 2016 & year_clean <= 2019 ~ "2016-2019\n(Pre-COVID)",
-      year_clean >= 2020 & year_clean <= 2022 ~ "2020-2022\n(Durante COVID)",
+      year_clean >= 2020 & year_clean <= 2022 ~ "2020-2022\n(During COVID)",
       year_clean >= 2023 & year_clean <= 2026 ~ "2023-2026\n(Post-COVID)",
       TRUE ~ "Otro"
     )
@@ -376,26 +376,34 @@ alluvial_data <- df_trabajo %>%
     "2023-2026\n(Post-COVID)"
   )))
 
+# Calcular percentil 20 para identificar secciones pequeñas
+threshold_freq <- quantile(alluvial_data$Freq, 0.20)
+
+# Asignar color de texto basado en el tamaño de la sección
+alluvial_data <- alluvial_data %>%
+  mutate(text_color = ifelse(Freq <= threshold_freq, "black", "black"))
+
 p2 <- ggplot(alluvial_data,
              aes(x = periodo, y = Freq,
                  stratum = topic_label, alluvium = topic_label,
                  fill = topic_label, label = topic_label)) +
   geom_alluvium(alpha = 0.7, width = 0.4) +
   geom_stratum(width = 0.4, color = "white") +
-  geom_text(stat = "stratum", size = 2.5) +
+  geom_text(stat = "stratum", aes(color = text_color), size = 2.5) +
   scale_fill_manual(values = palette_topics) +
+  scale_color_identity() +
   labs(
-    title = "Evolución de Topics a través de Periodos",
-    subtitle = "Pre-COVID → Durante COVID → Post-COVID",
-    x = NULL, y = "Número de Documentos"
+    title = "Evolution of Topics across Periods",
+    subtitle = "Pre-COVID → During COVID → Post-COVID",
+    x = NULL, y = "Number of Documents"
   ) +
   theme(legend.position = "none")
 
 ggsave("outputs/figuras/tematicas/02_topics_alluvial_evolution.png", p2,
        width = 12, height = 8, dpi = 300, bg = "white")
 
-# -------- VISUALIZACIÓN 3: Word Clouds por Topic --------
-cat("   Generando visualización 3/7: Word Clouds por Topic...\n")
+# -------- VISUALIZATION 3: Word Clouds per Topic --------
+cat("   Generating visualization 3/7: Word Clouds per Topic...\n")
 
 png("outputs/figuras/tematicas/03_wordclouds_por_topic.png",
     width = 14, height = 10, units = "in", res = 300)
@@ -422,8 +430,8 @@ for (i in 1:optimal_k) {
 
 dev.off()
 
-# -------- VISUALIZACIÓN 4: Keywords Network --------
-cat("   Generando visualización 4/7: Keywords Co-occurrence Network...\n")
+# -------- VISUALIZATION 4: Keywords Network --------
+cat("   Generating visualization 4/7: Keywords Co-occurrence Network...\n")
 
 keywords_split <- df_trabajo %>%
   select(ID, keywords_combined) %>%
@@ -467,11 +475,11 @@ if (nrow(keyword_cooc) > 0) {
     geom_edge_link(aes(width = weight), alpha = 0.3, color = "gray60") +
     geom_node_point(aes(size = size, color = factor(cluster)), alpha = 0.7) +
     geom_node_text(aes(label = name), size = 3, repel = TRUE, max.overlaps = 20) +
-    scale_edge_width_continuous(range = c(0.5, 2), name = "Co-ocurrencia") +
-    scale_size_continuous(range = c(3, 12), name = "Frecuencia") +
+    scale_edge_width_continuous(range = c(0.5, 2), name = "Co-occurrence") +
+    scale_size_continuous(range = c(3, 12), name = "Frequency") +
     scale_color_viridis_d(name = "Cluster") +
     labs(
-      title = "Red de Co-ocurrencia de Keywords",
+      title = "Keywords Co-occurrence Network",
       subtitle = paste("Top 50 keywords |", length(unique(V(g_keywords)$cluster)), "clusters")
     ) +
     theme_graph() +
@@ -484,8 +492,8 @@ if (nrow(keyword_cooc) > 0) {
          width = 14, height = 10, dpi = 300, bg = "white")
 }
 
-# -------- VISUALIZACIÓN 5: Trend Timeline --------
-cat("   Generando visualización 5/7: Trend Topics Timeline...\n")
+# -------- VISUALIZATION 5: Trend Timeline --------
+cat("   Generating visualization 5/7: Trend Topics Timeline...\n")
 
 topics_trend <- df_trabajo %>%
   filter(year_clean <= 2025) %>%
@@ -502,9 +510,9 @@ p5 <- ggplot(topics_trend, aes(x = year_clean, y = pct, color = topic_label)) +
   scale_x_continuous(breaks = seq(2016, 2025, 1)) +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   labs(
-    title = "Tendencias Temporales de Topics (2016-2025)",
-    subtitle = "Proporción relativa por año",
-    x = "Año", y = "% del total por año"
+    title = "Temporal Trends of Topics (2016-2025)",
+    subtitle = "Relative proportion per year",
+    x = "Year", y = "% of total per year"
   ) +
   theme(
     legend.position = "bottom",
@@ -516,53 +524,60 @@ p5 <- ggplot(topics_trend, aes(x = year_clean, y = pct, color = topic_label)) +
 ggsave("outputs/figuras/tematicas/05_trend_topics_timeline.png", p5,
        width = 12, height = 8, dpi = 300, bg = "white")
 
-# -------- VISUALIZACIÓN 6: Distribución Geográfica --------
-cat("   Generando visualización 6/7: Distribución Geográfica...\n")
+# -------- VISUALIZATION 6: Geographic Distribution --------
+cat("   Generating visualization 6/7: Geographic Distribution...\n")
 
 # Extraer países del campo RP (Reprint Author Address)
 if ("RP" %in% names(M) && any(!is.na(M$RP))) {
-  # Extraer países desde RP (último elemento después de coma suele ser país)
+  # Extract countries from RP field (remove email addresses and extra text)
   M_paises <- M %>%
     filter(!is.na(RP) & RP != "") %>%
     mutate(
       pais = str_extract(RP, "[^,]+$"),
+      pais = str_remove(pais, ";.*$"),  # Remove everything after semicolon (emails, etc.)
       pais = trimws(pais),
-      pais = toupper(pais)
+      pais = toupper(pais),
+      # Standardize country names for publication
+      pais = case_when(
+        pais == "PEOPLES R CHINA" ~ "CHINA",
+        pais == "TURKIYE" ~ "TURKEY",
+        TRUE ~ pais
+      )
     ) %>%
     filter(!is.na(pais) & pais != "")
 
   paises <- M_paises %>%
-    count(pais, name = "Documentos") %>%
-    arrange(desc(Documentos)) %>%
+    count(pais, name = "Documents") %>%
+    arrange(desc(Documents)) %>%
     head(15) %>%
-    rename(Pais = pais) %>%
-    mutate(Porcentaje = round(Documentos / nrow(M) * 100, 2))
+    rename(Country = pais) %>%
+    mutate(Percentage = round(Documents / nrow(M) * 100, 2))
 
   write.csv(paises, "outputs/tablas/11_top_paises.csv", row.names = FALSE)
 
-  p6 <- ggplot(paises, aes(x = reorder(Pais, Documentos), y = Documentos, fill = Documentos)) +
+  p6 <- ggplot(paises, aes(x = reorder(Country, Documents), y = Documents, fill = Documents)) +
     geom_col(show.legend = FALSE) +
-    geom_text(aes(label = paste0(Documentos, " (", Porcentaje, "%)")),
+    geom_text(aes(label = paste0(Documents, " (", Percentage, "%)")),
               hjust = -0.1, size = 3) +
     coord_flip() +
     scale_fill_viridis_c(option = "plasma") +
-    ylim(0, max(paises$Documentos) * 1.15) +
+    ylim(0, max(paises$Documents) * 1.15) +
     labs(
-      title = "Distribución Geográfica de la Producción Científica",
-      subtitle = "Top 15 países por número de publicaciones",
-      x = NULL, y = "Número de Documentos"
+      title = "Geographic Distribution of Scientific Production",
+      subtitle = "Top 15 countries by number of publications",
+      x = NULL, y = "Number of Documents"
     )
 
   ggsave("outputs/figuras/tematicas/06_distribucion_geografica.png", p6,
          width = 10, height = 7, dpi = 300, bg = "white")
 
-  cat("   Análisis geográfico completado\n")
+  cat("   Geographic analysis completed\n")
 } else {
-  cat("   Campo de países no disponible, análisis geográfico omitido\n")
+  cat("   Country field not available, geographic analysis skipped\n")
 }
 
-# -------- VISUALIZACIÓN 7: Distribución de Topics --------
-cat("   Generando visualización 7/7: Distribución de Topics...\n")
+# -------- VISUALIZATION 7: Distribution of Topics --------
+cat("   Generating visualization 7/7: Distribution of Topics...\n")
 
 topic_dist <- df_trabajo %>%
   count(topic_label) %>%
@@ -576,31 +591,31 @@ p7 <- ggplot(topic_dist, aes(x = reorder(topic_label, n), y = n, fill = topic_la
   scale_fill_manual(values = palette_topics) +
   ylim(0, max(topic_dist$n) * 1.15) +
   labs(
-    title = "Distribución de Documentos por Topic",
-    subtitle = paste("Total:", nrow(df_trabajo), "documentos"),
-    x = NULL, y = "Número de Documentos"
+    title = "Distribution of Documents by Topic",
+    subtitle = paste("Total:", nrow(df_trabajo), "documents"),
+    x = NULL, y = "Number of Documents"
   )
 
 ggsave("outputs/figuras/tematicas/07_distribucion_topics.png", p7,
        width = 10, height = 8, dpi = 300, bg = "white")
 
-cat("\nVisualizaciones completadas\n\n")
+cat("\nVisualizations completed\n\n")
 
 # ==============================================================================
 # 7. MÉTRICAS DE VALIDACIÓN
 # ==============================================================================
 
-cat("PASO 5: Generando métricas de validación...\n")
+cat("STEP 5: Generating validation metrics...\n")
 
 # Distribución de topics
 topic_distribution <- df_trabajo %>%
   count(topic_label) %>%
   arrange(desc(n)) %>%
   mutate(
-    Porcentaje = round(n / sum(n) * 100, 1),
-    Porcentaje_Acumulado = cumsum(Porcentaje)
+    Percentage = round(n / sum(n) * 100, 1),
+    Cumulative_Percentage = cumsum(Percentage)
   ) %>%
-  rename(Topic = topic_label, Documentos = n)
+  rename(Topic = topic_label, Documents = n)
 
 write.csv(topic_distribution, "outputs/tablas/09_topics_distribucion.csv", row.names = FALSE)
 
@@ -626,7 +641,7 @@ cat("RESUMEN DE RESULTADOS:\n")
 cat("  Documentos procesados:", nrow(df_trabajo), "\n")
 cat("  Vocabulario final:", ncol(dtm_filtered), "términos\n")
 cat("  Keywords extraídas: 100% del corpus\n")
-cat("  Topics identificados:", optimal_k, "\n")
+cat("  Topics identified:", optimal_k, "\n")
 cat("  Visualizaciones generadas: 7\n")
 cat("  Tablas generadas: 6\n\n")
 
@@ -641,7 +656,7 @@ cat("     - 7 visualizaciones PNG (300 DPI)\n\n")
 cat("  outputs/tablas/\n")
 cat("     - 6 tablas CSV\n\n")
 
-cat("PRÓXIMOS PASOS:\n")
+cat("NEXT STEPS:\n")
 cat("  1. Revisar visualizaciones en outputs/figuras/tematicas/\n")
 cat("  2. Validar etiquetas de topics\n")
 cat("  3. Ejecutar Fase 2B: Análisis de Redes\n\n")
