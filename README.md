@@ -8,8 +8,6 @@
 
 This repository contains the code, data, and analysis for a comprehensive bibliometric study mapping the landscape of **science education and educational quality** research from 2016 to 2026. The study analyzes **335 unique documents** from Scopus and Web of Science, employing advanced text mining, topic modeling, and network analysis techniques.
 
-**Target**: High-impact Q1/Q2 journal publication in science education.
-
 ---
 
 ## 🎯 Objectives
@@ -167,22 +165,6 @@ The project generates **publication-ready visualizations** (300 DPI, colorblind-
 
 ---
 
-## 🎓 Academic Output
-
-**Planned Manuscript**:
-- **Target Journals**:
-  - Journal of Research in Science Teaching (Q1, IF ~4.5)
-  - International Journal of Science Education (Q1, IF ~3.5)
-  - Research in Science Education (Q1/Q2, IF ~2.5)
-
-**Contributions**:
-- Novel approach to missing keywords problem (TF-IDF extraction)
-- Rigorous LDA optimization (3 complementary metrics)
-- COVID-19 contextualized temporal analysis
-- Identification of geographic and thematic research gaps
-
----
-
 ## 📝 Citation
 
 If you use this code or methodology, please cite:
@@ -203,10 +185,9 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 👤 Author
 
-**[Your Name]**
-- 📧 Email: [your.email@institution.edu]
-- 🔗 LinkedIn: [Your LinkedIn]
-- 🐦 Twitter: [@YourHandle]
+**Marcos Elías Gómez Osorio**
+- 📧 Email: [[Email](marcoseliasgom@gmail.com)]
+- 🔗 LinkedIn: [[Your LinkedIn](https://www.linkedin.com/in/marcos-g%C3%B3mez-659b0938a/)]
 
 ---
 
@@ -227,24 +208,6 @@ This is an academic research project. If you find issues or have suggestions:
 - Chen, C. (2017). Science mapping: A systematic review. *JDIS*, 2(2), 1-40.
 - Mimno, D., et al. (2011). Optimizing semantic coherence in topic models. *EMNLP*.
 - Aria, M., & Cuccurullo, C. (2017). bibliometrix: An R-tool for bibliometrics. *JOSS*, 2(15), 394.
-
----
-
-## 📅 Project Timeline
-
-- ✅ **Phase 1**: Initial diagnostics (Completed - Feb 2026)
-- ✅ **Phase 2A**: Thematic analysis (Completed - Feb 2026)
-- 🔄 **Phase 2B**: Network analysis (In Progress)
-- 📅 **Phase 2C**: Impact analysis (Planned)
-- 📅 **Phase 3**: Manuscript writing (Planned)
-
----
-
-## ⚠️ Acknowledgments
-
-- **Data Sources**: Scopus and Web of Science
-- **Tools**: R Core Team, bibliometrix package authors
-- **Inspiration**: Science mapping and bibliometric community
 
 ---
 
