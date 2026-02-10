@@ -376,10 +376,13 @@ alluvial_data <- df_trabajo %>%
     "2023-2026\n(Post-COVID)"
   )))
 
-p2 <- ggplot(alluvial_data, aes(x = periodo, y = Freq, alluvium = topic_label)) +
-  geom_alluvium(aes(fill = topic_label), alpha = 0.7, width = 0.4) +
-  geom_stratum(aes(fill = topic_label), width = 0.4, color = "white") +
-  geom_text(stat = "stratum", aes(label = topic_label), size = 3) +
+p2 <- ggplot(alluvial_data,
+             aes(x = periodo, y = Freq,
+                 stratum = topic_label, alluvium = topic_label,
+                 fill = topic_label, label = topic_label)) +
+  geom_alluvium(alpha = 0.7, width = 0.4) +
+  geom_stratum(width = 0.4, color = "white") +
+  geom_text(stat = "stratum", size = 2.5) +
   scale_fill_manual(values = palette_topics) +
   labs(
     title = "Evolución de Topics a través de Periodos",
