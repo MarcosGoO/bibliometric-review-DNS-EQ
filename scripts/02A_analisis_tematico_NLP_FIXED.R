@@ -256,7 +256,7 @@ cat("   Modelo LDA guardado\n\n")
 cat("   Extrayendo topics...\n")
 
 topics_terms <- terms(lda_model, 20)
-doc_topics <- posterior(lda_model)$topics
+doc_topics <- topicmodels::posterior(lda_model)$topics
 
 df_trabajo$topic_id <- apply(doc_topics, 1, which.max)
 df_trabajo$topic_probability <- apply(doc_topics, 1, max)
@@ -399,7 +399,7 @@ png("outputs/figuras/tematicas/03_wordclouds_por_topic.png",
 
 par(mfrow = c(ceiling(optimal_k/3), 3), mar = c(1, 1, 3, 1))
 
-topic_word_probs <- posterior(lda_model)$terms
+topic_word_probs <- topicmodels::posterior(lda_model)$terms
 
 for (i in 1:optimal_k) {
   word_probs <- sort(topic_word_probs[i, ], decreasing = TRUE)[1:50]
