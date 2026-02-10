@@ -4,15 +4,13 @@
 # Tiempo estimado: 5-10 minutos (dependiendo de tu conexión)
 ################################################################################
 
-cat("="*80, "\n")
-cat("🔧 CONFIGURACIÓN DE ENTORNO R PARA ANÁLISIS BIBLIOMÉTRICO\n")
-cat("="*80, "\n\n")
+cat("CONFIGURACIÓN DE ENTORNO R PARA ANÁLISIS BIBLIOMÉTRICO\n")
 
 # ==============================================================================
 # 1. CONFIGURAR REPOSITORIO CRAN
 # ==============================================================================
 
-cat("📍 Configurando repositorio CRAN...\n")
+cat("Configurando repositorio CRAN...\n")
 options(repos = c(CRAN = "https://cloud.r-project.org/"))
 
 # ==============================================================================
@@ -92,14 +90,14 @@ paquetes_core <- c(
 
 instalar_con_progreso <- function(paquete) {
   if (!require(paquete, character.only = TRUE, quietly = TRUE)) {
-    cat(sprintf("📥 Instalando: %s\n", paquete))
+    cat(sprintf("Instalando: %s\n", paquete))
     tryCatch({
       install.packages(paquete, dependencies = TRUE, quiet = FALSE)
       library(paquete, character.only = TRUE)
-      cat(sprintf("   ✅ %s instalado correctamente\n", paquete))
+      cat(sprintf("    %s instalado correctamente\n", paquete))
       return(TRUE)
     }, error = function(e) {
-      cat(sprintf("   ❌ Error instalando %s: %s\n", paquete, e$message))
+      cat(sprintf("    Error instalando %s: %s\n", paquete, e$message))
       return(FALSE)
     })
   } else {
@@ -112,9 +110,7 @@ instalar_con_progreso <- function(paquete) {
 # 4. INSTALACIÓN PROGRESIVA
 # ==============================================================================
 
-cat("\n🚀 Iniciando instalación de", length(paquetes_core), "paquetes...\n")
-cat("⏱️  Esto puede tomar 5-10 minutos.\n")
-cat("☕ Tiempo perfecto para un café...\n\n")
+cat("\nIniciando instalación de", length(paquetes_core), "paquetes...\n")
 
 # Contador de éxito/fallo
 exitos <- 0
@@ -142,18 +138,17 @@ for (i in seq_along(paquetes_core)) {
 # ==============================================================================
 
 cat("\n")
+cat("REPORTE DE INSTALACIÓN\n")
 cat("="*80, "\n")
-cat("📊 REPORTE DE INSTALACIÓN\n")
-cat("="*80, "\n")
-cat(sprintf("✅ Exitosos: %d/%d\n", exitos, length(paquetes_core)))
-cat(sprintf("❌ Fallidos: %d/%d\n", fallos, length(paquetes_core)))
+cat(sprintf(" Exitosos: %d/%d\n", exitos, length(paquetes_core)))
+cat(sprintf(" Fallidos: %d/%d\n", fallos, length(paquetes_core)))
 
 if (fallos > 0) {
-  cat("\n⚠️ Paquetes que fallaron:\n")
+  cat("\nPaquetes que fallaron:\n")
   for (pkg in paquetes_fallidos) {
     cat(sprintf("   - %s\n", pkg))
   }
-  cat("\n💡 SOLUCIÓN: Intenta instalar los fallidos manualmente:\n")
+  cat("\nSOLUCIÓN: Intenta instalar los fallidos manualmente:\n")
   cat(sprintf('   install.packages(c("%s"))\n', 
               paste(paquetes_fallidos, collapse = '", "')))
 }
@@ -162,16 +157,16 @@ if (fallos > 0) {
 # 6. VERIFICACIÓN DE PAQUETES CRÍTICOS
 # ==============================================================================
 
-cat("\n🔍 Verificando paquetes críticos...\n")
+cat("\nVerificando paquetes críticos...\n")
 
 paquetes_criticos <- c("bibliometrix", "tidyverse", "igraph", "tm", "topicmodels")
 todos_ok <- TRUE
 
 for (pkg in paquetes_criticos) {
   if (require(pkg, character.only = TRUE, quietly = TRUE)) {
-    cat(sprintf("✅ %s: OK\n", pkg))
+    cat(sprintf(" %s: OK\n", pkg))
   } else {
-    cat(sprintf("❌ %s: FALTA\n", pkg))
+    cat(sprintf(" %s: FALTA\n", pkg))
     todos_ok <- FALSE
   }
 }
@@ -181,13 +176,13 @@ for (pkg in paquetes_criticos) {
 # ==============================================================================
 
 if (require("bibliometrix", quietly = TRUE)) {
-  cat("\n🧪 Probando bibliometrix...\n")
+  cat("\nProbando bibliometrix...\n")
   tryCatch({
     # Test simple
     data(scientometrics, package = "bibliometrixData")
-    cat("✅ bibliometrix funciona correctamente\n")
+    cat(" bibliometrix funciona correctamente\n")
   }, error = function(e) {
-    cat("⚠️ bibliometrix instalado pero puede tener problemas:\n")
+    cat("bibliometrix instalado pero puede tener problemas:\n")
     cat("   ", e$message, "\n")
   })
 }
@@ -197,36 +192,34 @@ if (require("bibliometrix", quietly = TRUE)) {
 # ==============================================================================
 
 cat("\n")
-cat("="*80, "\n")
 if (todos_ok && fallos == 0) {
-  cat("🎉 ¡INSTALACIÓN COMPLETADA EXITOSAMENTE!\n")
+  cat("¡INSTALACIÓN COMPLETADA EXITOSAMENTE!\n")
   cat("="*80, "\n")
-  cat("\n✅ Tu entorno R está listo para el análisis bibliométrico.\n")
-  cat("\n📝 PRÓXIMOS PASOS:\n")
+  cat("\n Tu entorno R está listo para el análisis bibliométrico.\n")
+  cat("\nPRÓXIMOS PASOS:\n")
   cat("   1. Cierra este script\n")
   cat("   2. Abre '01_diagnostico_inicial.R'\n")
   cat("   3. Ejecuta el análisis completo\n")
-  cat("\n💡 TIP: Guarda este script por si necesitas reinstalar en el futuro\n")
+  cat("\nTIP: Guarda este script por si necesitas reinstalar en el futuro\n")
 } else {
-  cat("⚠️ INSTALACIÓN COMPLETADA CON ADVERTENCIAS\n")
+  cat("INSTALACIÓN COMPLETADA CON ADVERTENCIAS\n")
   cat("="*80, "\n")
   cat("\nAlgunos paquetes no se instalaron. Puedes continuar, pero algunas\n")
   cat("funcionalidades pueden no estar disponibles.\n")
-  cat("\n📝 OPCIONES:\n")
+  cat("\nOPCIONES:\n")
   cat("   1. Reintentar la instalación de paquetes fallidos manualmente\n")
   cat("   2. Continuar con los paquetes instalados exitosamente\n")
   cat("   3. Buscar ayuda para paquetes específicos que fallaron\n")
 }
 
 cat("\n")
-cat("="*80, "\n")
 
 # ==============================================================================
 # 9. INFORMACIÓN DE SESIÓN (ÚTIL PARA DEBUGGING)
 # ==============================================================================
 
 cat("\n📋 INFORMACIÓN DE TU SESIÓN R:\n")
-cat("="*80, "\n")
+
 print(sessionInfo())
 
 # ==============================================================================

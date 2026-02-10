@@ -34,9 +34,9 @@ instalar_si_falta <- function(paquete) {
 }
 
 # Instalar y cargar todos los paquetes
-cat("📦 Instalando paquetes necesarios...\n")
+cat("Instalando paquetes necesarios...\n")
 invisible(sapply(paquetes_necesarios, instalar_si_falta))
-cat("✅ Todos los paquetes cargados exitosamente\n\n")
+cat("Todos los paquetes cargados exitosamente\n\n")
 
 # ==============================================================================
 # 2. CONFIGURACIÓN DE RUTAS Y PARÁMETROS
@@ -54,12 +54,12 @@ ruta_wos <- "data/raw/savedrecs.bib"
 
 # Verificar que los archivos existen
 if (!file.exists(ruta_scopus)) {
-  stop("❌ ERROR: No se encuentra el archivo de Scopus en data/raw/
+  stop("ERROR: No se encuentra el archivo de Scopus en data/raw/
        Por favor copia 'scopus_export_Feb_9-2026_4a282d97-49f3-4a6d-9084-05a1dd2ac18e.bib' a la carpeta data/raw/")
 }
 
 if (!file.exists(ruta_wos)) {
-  stop("❌ ERROR: No se encuentra el archivo de WoS en data/raw/
+  stop("ERROR: No se encuentra el archivo de WoS en data/raw/
        Por favor copia 'savedrecs.bib' a la carpeta data/raw/")
 }
 
@@ -74,7 +74,7 @@ dir.create("data/processed", showWarnings = FALSE)
 # 3. CARGA DE ARCHIVOS .BIB
 # ==============================================================================
 
-cat("📖 Cargando archivos bibliográficos...\n")
+cat("Cargando archivos bibliográficos...\n")
 
 # Cargar archivo de Scopus
 tryCatch({
@@ -83,9 +83,9 @@ tryCatch({
     dbsource = "scopus",
     format = "bibtex"
   )
-  cat("✅ Scopus cargado:", nrow(scopus_data), "registros\n")
+  cat("Scopus cargado:", nrow(scopus_data), "registros\n")
 }, error = function(e) {
-  cat("❌ Error al cargar Scopus:", e$message, "\n")
+  cat("Error al cargar Scopus:", e$message, "\n")
   stop("Verifica la ruta del archivo de Scopus")
 })
 
@@ -96,9 +96,9 @@ tryCatch({
     dbsource = "wos",
     format = "bibtex"
   )
-  cat("✅ WoS cargado:", nrow(wos_data), "registros\n")
+  cat("WoS cargado:", nrow(wos_data), "registros\n")
 }, error = function(e) {
-  cat("❌ Error al cargar WoS:", e$message, "\n")
+  cat(" Error al cargar WoS:", e$message, "\n")
   stop("Verifica la ruta del archivo de WoS")
 })
 
@@ -106,13 +106,13 @@ tryCatch({
 # 4. FUSIÓN Y ELIMINACIÓN DE DUPLICADOS
 # ==============================================================================
 
-cat("\n🔄 Fusionando bases de datos y eliminando duplicados...\n")
+cat("\nFusionando bases de datos y eliminando duplicados...\n")
 
 # Fusionar ambas bases
 M <- mergeDbSources(scopus_data, wos_data, remove.duplicated = TRUE)
 
 # Reporte de fusión
-cat("\n📊 RESUMEN DE FUSIÓN:\n")
+cat("\nRESUMEN DE FUSIÓN:\n")
 cat("   - Registros Scopus:", nrow(scopus_data), "\n")
 cat("   - Registros WoS:", nrow(wos_data), "\n")
 cat("   - Total antes de fusión:", nrow(scopus_data) + nrow(wos_data), "\n")
@@ -127,7 +127,7 @@ cat("   - Tasa de solapamiento:",
 # 5. ANÁLISIS DESCRIPTIVO INICIAL
 # ==============================================================================
 
-cat("📈 Generando estadísticas descriptivas...\n")
+cat("Generando estadísticas descriptivas...\n")
 
 # Análisis bibliométrico básico
 resultados <- biblioAnalysis(M, sep = ";")
@@ -169,10 +169,10 @@ completitud <- data.frame(
 completitud <- completitud %>%
   arrange(desc(Porcentaje)) %>%
   mutate(Estado = case_when(
-    Porcentaje >= 90 ~ "✅ Excelente",
-    Porcentaje >= 70 ~ "⚠️ Bueno",
-    Porcentaje >= 50 ~ "⚠️ Regular",
-    TRUE ~ "❌ Deficiente"
+    Porcentaje >= 90 ~ "Excelente",
+    Porcentaje >= 70 ~ "Bueno",
+    Porcentaje >= 50 ~ "Regular",
+    TRUE ~ "Deficiente"
   ))
 
 print(completitud)
@@ -185,7 +185,7 @@ write.csv(completitud, "outputs/tablas/01_completitud_campos.csv",
 # 7. DISTRIBUCIÓN TEMPORAL
 # ==============================================================================
 
-cat("\n📅 Analizando distribución temporal...\n")
+cat("\nAnalizando distribución temporal...\n")
 
 # Crear tabla de producción por año
 produccion_anual <- M %>%
@@ -222,7 +222,7 @@ ggsave("outputs/figuras/01_produccion_anual.png", p1,
 # 8. TIPOS DE DOCUMENTOS
 # ==============================================================================
 
-cat("\n📄 Analizando tipos de documentos...\n")
+cat("\nAnalizando tipos de documentos...\n")
 
 # Distribución por tipo
 tipos_doc <- M %>%
@@ -257,7 +257,7 @@ ggsave("outputs/figuras/02_tipos_documento.png", p2,
 # 9. IDIOMAS DE PUBLICACIÓN
 # ==============================================================================
 
-cat("\n🌍 Analizando idiomas...\n")
+cat("\nAnalizando idiomas...\n")
 
 idiomas <- M %>%
   count(LA) %>%
@@ -273,7 +273,7 @@ print(head(idiomas, 10))
 # 10. JOURNALS MÁS PRODUCTIVOS
 # ==============================================================================
 
-cat("\n📚 Identificando journals más productivos...\n")
+cat("\nIdentificando journals más productivos...\n")
 
 top_journals <- M %>%
   filter(!is.na(SO)) %>%
@@ -293,7 +293,7 @@ write.csv(top_journals, "outputs/tablas/02_top_journals.csv",
 # 11. PAÍSES MÁS PRODUCTIVOS
 # ==============================================================================
 
-cat("\n🌎 Analizando distribución geográfica...\n")
+cat("\nAnalizando distribución geográfica...\n")
 
 # Extraer países de afiliaciones
 paises <- M %>%
@@ -364,21 +364,21 @@ writeData(wb, "Top_Paises", paises)
 # Guardar Excel
 saveWorkbook(wb, "outputs/01_diagnostico_completo.xlsx", overwrite = TRUE)
 
-cat("✅ Archivo Excel guardado: outputs/01_diagnostico_completo.xlsx\n")
+cat("Archivo Excel guardado: outputs/01_diagnostico_completo.xlsx\n")
 
 # ==============================================================================
 # 13. REPORTE FINAL
 # ==============================================================================
 
 cat("\n" , "="*80, "\n")
-cat("✅ DIAGNÓSTICO INICIAL COMPLETADO\n")
+cat("DIAGNÓSTICO INICIAL COMPLETADO\n")
 cat("="*80, "\n\n")
 cat("Archivos generados:\n")
-cat("  📁 outputs/datos_fusionados.rds (datos en formato R)\n")
-cat("  📁 outputs/datos_fusionados.csv (datos en CSV)\n")
-cat("  📁 outputs/01_diagnostico_completo.xlsx (Excel con múltiples hojas)\n")
-cat("  📊 outputs/figuras/*.png (3 gráficos)\n")
-cat("  📋 outputs/tablas/*.csv (2 tablas)\n\n")
+cat("outputs/datos_fusionados.rds (datos en formato R)\n")
+cat("outputs/datos_fusionados.csv (datos en CSV)\n")
+cat("outputs/01_diagnostico_completo.xlsx (Excel con múltiples hojas)\n")
+cat("outputs/figuras/*.png (3 gráficos)\n")
+cat("outputs/tablas/*.csv (2 tablas)\n\n")
 
 cat("PRÓXIMOS PASOS:\n")
 cat("  1. Revisar el archivo Excel generado\n")
@@ -386,7 +386,7 @@ cat("  2. Verificar gráficos en la carpeta 'figuras'\n")
 cat("  3. Ejecutar script 02 para análisis de keywords\n")
 cat("  4. Ejecutar script 03 para análisis de co-citación\n\n")
 
-cat("="*80, "\n")
+cat("=")
 
 # ==============================================================================
 # FIN DEL SCRIPT

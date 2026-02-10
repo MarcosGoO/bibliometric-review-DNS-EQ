@@ -56,38 +56,38 @@ paquetes_fase2a <- c(
 # Función para instalar paquetes faltantes
 instalar_si_falta <- function(paquete) {
   if (!require(paquete, character.only = TRUE)) {
-    cat("📦 Instalando", paquete, "...\n")
+    cat("Instalando", paquete, "...\n")
     install.packages(paquete, dependencies = TRUE)
     library(paquete, character.only = TRUE)
   }
 }
 
 # Instalar y cargar todos los paquetes
-cat("📦 Verificando e instalando paquetes necesarios...\n")
+cat("Verificando e instalando paquetes necesarios...\n")
 suppressPackageStartupMessages({
   invisible(sapply(paquetes_fase2a, instalar_si_falta))
 })
-cat("✅ Todos los paquetes cargados exitosamente\n\n")
+cat("Todos los paquetes cargados exitosamente\n\n")
 
 # ==============================================================================
 # 2. CONFIGURACIÓN Y CARGA DE DATOS
 # ==============================================================================
 
-cat("📁 Cargando datos fusionados...\n")
+cat("Cargando datos fusionados...\n")
 
 # Verificar que el archivo existe
 if (!file.exists("outputs/datos_fusionados.csv")) {
-  stop("❌ ERROR: No se encuentra 'outputs/datos_fusionados.csv'
+  stop("ERROR: No se encuentra 'outputs/datos_fusionados.csv'
        Por favor ejecuta primero el script 01_diagnostico_inicial_ACTUALIZADO.R")
 }
 
 # Cargar datos
 df <- read.csv("outputs/datos_fusionados.csv", stringsAsFactors = FALSE)
-cat("✅ Datos cargados:", nrow(df), "documentos\n")
+cat("Datos cargados:", nrow(df), "documentos\n")
 
 # Verificar campos críticos
 if (!"abstract" %in% names(df)) {
-  stop("❌ ERROR: El campo 'abstract' no existe en el dataset")
+  stop("ERROR: El campo 'abstract' no existe en el dataset")
 }
 
 # Filtrar documentos sin abstract
@@ -104,7 +104,7 @@ df_trabajo <- df_con_abstract
 # 3. PREPROCESAMIENTO DE TEXTO
 # ==============================================================================
 
-cat("🧹 PASO 1: Preprocesamiento de abstracts...\n")
+cat("PASO 1: Preprocesamiento de abstracts...\n")
 
 # Crear corpus desde abstracts
 corpus <- Corpus(VectorSource(df_trabajo$abstract))
@@ -180,7 +180,7 @@ write.csv(stats_preprocesamiento,
           "outputs/tablas/04_preprocesamiento_estadisticas.csv",
           row.names = FALSE)
 
-cat("✅ Preprocesamiento completado\n")
+cat("Preprocesamiento completado\n")
 cat("   Archivos guardados:\n")
 cat("   - data/processed/corpus_cleaned.rds\n")
 cat("   - data/processed/dtm_filtered.rds\n")
@@ -190,7 +190,7 @@ cat("   - outputs/tablas/04_preprocesamiento_estadisticas.csv\n\n")
 # 4. EXTRACCIÓN DE KEYWORDS CON TF-IDF
 # ==============================================================================
 
-cat("🔍 PASO 2: Extracción de keywords con TF-IDF...\n")
+cat("PASO 2: Extracción de keywords con TF-IDF...\n")
 
 # Calcular TF-IDF
 dtm_tfidf <- weightTfIdf(dtm_filtered)
@@ -262,7 +262,7 @@ write.csv(top_terms_global,
           "outputs/tablas/06_top_keywords_tfidf.csv",
           row.names = FALSE)
 
-cat("✅ Extracción de keywords completada\n")
+cat("Extracción de keywords completada\n")
 cat("   - Keywords extraídas para", nrow(df_trabajo), "documentos\n")
 cat("   - Cobertura original:",
     coverage_stats$Porcentaje[1], "% →", coverage_stats$Porcentaje[3], "%\n")
@@ -274,7 +274,7 @@ cat("   - outputs/tablas/06_top_keywords_tfidf.csv\n\n")
 # 5. TOPIC MODELING CON LDA
 # ==============================================================================
 
-cat("🎯 PASO 3: Topic Modeling con LDA...\n")
+cat("PASO 3: Topic Modeling con LDA...\n")
 
 # 5.1 Optimización del número de topics
 cat("   Fase 3.1: Optimizando número de topics (k)...\n")
@@ -395,7 +395,7 @@ write.csv(topic_descriptions,
           "outputs/tablas/07_topics_descripcion.csv",
           row.names = FALSE)
 
-cat("✅ Topic Modeling completado\n")
+cat("Topic Modeling completado\n")
 cat("   - Número de topics:", optimal_k, "\n")
 cat("   - Documentos asignados:", nrow(df_trabajo), "\n")
 cat("   Archivos guardados:\n")
@@ -417,7 +417,7 @@ write.csv(df_trabajo,
 saveRDS(df_trabajo,
         "data/processed/datos_con_topics_y_keywords.rds")
 
-cat("✅ Dataset guardado con", ncol(df_trabajo), "columnas\n")
+cat("Dataset guardado con", ncol(df_trabajo), "columnas\n")
 cat("   - data/processed/datos_con_topics_y_keywords.csv\n")
 cat("   - data/processed/datos_con_topics_y_keywords.rds\n\n")
 
@@ -425,7 +425,7 @@ cat("   - data/processed/datos_con_topics_y_keywords.rds\n\n")
 # 7. VISUALIZACIONES TEMÁTICAS
 # ==============================================================================
 
-cat("📊 PASO 4: Generando visualizaciones temáticas...\n\n")
+cat("PASO 4: Generando visualizaciones temáticas...\n\n")
 
 # Configurar tema ggplot2 para todas las visualizaciones
 theme_publication <- theme_minimal() +
@@ -618,7 +618,7 @@ if (nrow(keyword_cooc) > 0) {
   ggsave("outputs/figuras/tematicas/04_keywords_cooccurrence_network.png", p4,
          width = 14, height = 10, dpi = 300, bg = "white")
 } else {
-  cat("   ⚠️  No hay suficientes co-ocurrencias para generar red\n")
+  cat("   No hay suficientes co-ocurrencias para generar red\n")
 }
 
 # -------- VISUALIZACIÓN 5: Trend Topics Timeline --------
@@ -655,7 +655,7 @@ p5 <- ggplot(topics_trend, aes(x = year_clean, y = pct, color = topic_label)) +
 ggsave("outputs/figuras/tematicas/05_trend_topics_timeline.png", p5,
        width = 12, height = 8, dpi = 300, bg = "white")
 
-cat("\n✅ Visualizaciones completadas\n")
+cat("\nVisualizaciones completadas\n")
 cat("   Archivos generados en outputs/figuras/tematicas/:\n")
 cat("   - 00_lda_optimization_metrics.png\n")
 cat("   - 01_topics_heatmap_temporal.png\n")
@@ -689,7 +689,7 @@ if (require("textmineR", quietly = TRUE)) {
   cat("   - Coherence promedio:", round(mean(coherence_scores), 3), "\n")
   cat("     (>0.4 aceptable, >0.6 bueno)\n")
 } else {
-  cat("   ⚠️  Paquete textmineR no disponible, coherence no calculado\n")
+  cat("   Paquete textmineR no disponible, coherence no calculado\n")
 }
 
 # Resumen de distribución de topics
@@ -716,7 +716,7 @@ write.csv(topics_by_year_table,
           "outputs/tablas/10_topics_por_año.csv",
           row.names = FALSE)
 
-cat("✅ Validación completada\n")
+cat("Validación completada\n")
 cat("   Tablas generadas:\n")
 cat("   - outputs/tablas/08_topics_coherence_scores.csv\n")
 cat("   - outputs/tablas/09_topics_distribucion.csv\n")
@@ -727,26 +727,26 @@ cat("   - outputs/tablas/10_topics_por_año.csv\n\n")
 # ==============================================================================
 
 cat("\n", rep("=", 80), "\n")
-cat("✅ FASE 2A COMPLETADA EXITOSAMENTE\n")
+cat("FASE 2A COMPLETADA EXITOSAMENTE\n")
 cat(rep("=", 80), "\n\n")
 
 cat("RESUMEN DE RESULTADOS:\n")
-cat("  📊 Documentos procesados:", nrow(df_trabajo), "\n")
-cat("  🔤 Vocabulario final:", ncol(dtm_filtered), "términos\n")
-cat("  📝 Keywords extraídas: 100% del corpus (vs 40% original)\n")
-cat("  🎯 Topics identificados:", optimal_k, "\n")
-cat("  📈 Visualizaciones generadas: 6\n")
-cat("  📋 Tablas generadas: 7\n\n")
+cat("  Documentos procesados:", nrow(df_trabajo), "\n")
+cat("  Vocabulario final:", ncol(dtm_filtered), "términos\n")
+cat("  Keywords extraídas: 100% del corpus (vs 40% original)\n")
+cat("  Topics identificados:", optimal_k, "\n")
+cat("  Visualizaciones generadas: 6\n")
+cat("  Tablas generadas: 7\n\n")
 
 cat("ARCHIVOS PRINCIPALES GENERADOS:\n")
-cat("  📁 data/processed/\n")
+cat("  data/processed/\n")
 cat("     - datos_con_topics_y_keywords.csv (dataset enriquecido)\n")
 cat("     - lda_model.rds (modelo LDA)\n")
 cat("     - corpus_cleaned.rds\n")
 cat("     - dtm_filtered.rds\n\n")
-cat("  📊 outputs/figuras/tematicas/\n")
+cat("     outputs/figuras/tematicas/\n")
 cat("     - 6 visualizaciones PNG (300 DPI)\n\n")
-cat("  📋 outputs/tablas/\n")
+cat("     outputs/tablas/\n")
 cat("     - 7 tablas CSV con estadísticas\n\n")
 
 cat("PRÓXIMOS PASOS:\n")
