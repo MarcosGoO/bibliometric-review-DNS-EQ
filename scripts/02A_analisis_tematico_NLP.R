@@ -655,14 +655,15 @@ p5 <- ggplot(topics_trend, aes(x = year_clean, y = pct, color = topic_label)) +
 ggsave("outputs/figuras/tematicas/05_trend_topics_timeline.png", p5,
        width = 12, height = 8, dpi = 300, bg = "white")
 
-cat("\nVisualizaciones completadas\n")
+cat("\nVisualizaciones temáticas completadas\n")
 cat("   Archivos generados en outputs/figuras/tematicas/:\n")
 cat("   - 00_lda_optimization_metrics.png\n")
 cat("   - 01_topics_heatmap_temporal.png\n")
 cat("   - 02_topics_alluvial_evolution.png\n")
 cat("   - 03_wordclouds_por_topic.png\n")
 cat("   - 04_keywords_cooccurrence_network.png\n")
-cat("   - 05_trend_topics_timeline.png\n\n")
+cat("   - 05_trend_topics_timeline.png\n")
+cat("   (Análisis geográfico se generará a continuación)\n\n")
 
 # ==============================================================================
 # 8. VALIDACIÓN Y MÉTRICAS FINALES
@@ -723,6 +724,59 @@ cat("   - outputs/tablas/09_topics_distribucion.csv\n")
 cat("   - outputs/tablas/10_topics_por_año.csv\n\n")
 
 # ==============================================================================
+# 8B. ANÁLISIS GEOGRÁFICO COMPLEMENTARIO
+# ==============================================================================
+
+cat("Generando análisis geográfico...\n")
+
+# Extraer países de afiliaciones
+# El campo AU1_CO contiene el país del primer autor
+if ("AU1_CO" %in% names(M)) {
+  paises <- M %>%
+    select(AU1_CO) %>%
+    filter(!is.na(AU1_CO) & AU1_CO != "") %>%
+    count(AU1_CO, name = "Documentos") %>%
+    arrange(desc(Documentos)) %>%
+    head(20) %>%
+    rename(Pais = AU1_CO) %>%
+    mutate(Porcentaje = round(Documentos / nrow(M) * 100, 2))
+
+  # Guardar tabla
+  write.csv(paises, "outputs/tablas/11_top_paises.csv", row.names = FALSE)
+
+  # Visualización de países
+  p_paises <- ggplot(head(paises, 15),
+                     aes(x = reorder(Pais, Documentos),
+                         y = Documentos, fill = Documentos)) +
+    geom_col(show.legend = FALSE) +
+    geom_text(aes(label = paste0(Documentos, " (", Porcentaje, "%)")),
+              hjust = -0.1, size = 3) +
+    coord_flip() +
+    scale_fill_viridis_c(option = "plasma") +
+    ylim(0, max(paises$Documentos) * 1.15) +
+    theme_minimal() +
+    labs(
+      title = "Distribución Geográfica de la Producción Científica",
+      subtitle = "Top 15 países por número de publicaciones",
+      x = NULL,
+      y = "Número de Documentos"
+    ) +
+    theme(
+      plot.title = element_text(face = "bold", size = 14),
+      plot.subtitle = element_text(size = 10, color = "gray40")
+    )
+
+  ggsave("outputs/figuras/tematicas/06_distribucion_geografica.png", p_paises,
+         width = 10, height = 7, dpi = 300, bg = "white")
+
+  cat("   Análisis geográfico completado\n")
+  cat("   - outputs/tablas/11_top_paises.csv\n")
+  cat("   - outputs/figuras/tematicas/06_distribucion_geografica.png\n\n")
+} else {
+  cat("   Campo AU1_CO no disponible, análisis geográfico omitido\n\n")
+}
+
+# ==============================================================================
 # 9. REPORTE FINAL
 # ==============================================================================
 
@@ -735,8 +789,8 @@ cat("  Documentos procesados:", nrow(df_trabajo), "\n")
 cat("  Vocabulario final:", ncol(dtm_filtered), "términos\n")
 cat("  Keywords extraídas: 100% del corpus (vs 40% original)\n")
 cat("  Topics identificados:", optimal_k, "\n")
-cat("  Visualizaciones generadas: 6\n")
-cat("  Tablas generadas: 7\n\n")
+cat("  Visualizaciones generadas: 7\n")
+cat("  Tablas generadas: 8\n\n")
 
 cat("ARCHIVOS PRINCIPALES GENERADOS:\n")
 cat("  data/processed/\n")
@@ -744,10 +798,12 @@ cat("     - datos_con_topics_y_keywords.csv (dataset enriquecido)\n")
 cat("     - lda_model.rds (modelo LDA)\n")
 cat("     - corpus_cleaned.rds\n")
 cat("     - dtm_filtered.rds\n\n")
-cat("     outputs/figuras/tematicas/\n")
-cat("     - 6 visualizaciones PNG (300 DPI)\n\n")
-cat("     outputs/tablas/\n")
-cat("     - 7 tablas CSV con estadísticas\n\n")
+cat("  outputs/figuras/tematicas/\n")
+cat("     - 7 visualizaciones PNG (300 DPI)\n")
+cat("     - Incluye análisis geográfico\n\n")
+cat("  outputs/tablas/\n")
+cat("     - 8 tablas CSV con estadísticas\n")
+cat("     - Incluye top países\n\n")
 
 cat("PRÓXIMOS PASOS:\n")
 cat("  1. Revisar visualizaciones en outputs/figuras/tematicas/\n")
