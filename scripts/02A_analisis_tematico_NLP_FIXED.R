@@ -437,10 +437,14 @@ keyword_freq <- keywords_split %>%
   arrange(desc(n)) %>%
   filter(n >= 5)
 
+# Seleccionar top 50 keywords primero
+top_keywords <- keyword_freq %>% head(50)
+
+# Crear co-ocurrencias SOLO entre keywords del top 50
 keyword_cooc <- keywords_split %>%
-  filter(keyword %in% keyword_freq$keyword) %>%
+  filter(keyword %in% top_keywords$keyword) %>%
   inner_join(keywords_split %>%
-               filter(keyword %in% keyword_freq$keyword),
+               filter(keyword %in% top_keywords$keyword),
              by = "ID", suffix = c("_1", "_2")) %>%
   filter(keyword_1 < keyword_2) %>%
   count(keyword_1, keyword_2, name = "weight") %>%
@@ -450,7 +454,7 @@ if (nrow(keyword_cooc) > 0) {
   g_keywords <- graph_from_data_frame(
     keyword_cooc,
     directed = FALSE,
-    vertices = keyword_freq %>% head(50)
+    vertices = top_keywords
   )
 
   V(g_keywords)$degree <- degree(g_keywords)
@@ -646,3 +650,4 @@ cat("Fin:", format(Sys.time(), "%Y-%m-%d %H:%M:%S"), "\n")
 cat(rep("=", 80), "\n\n")
 
 # FIN DEL SCRIPT
+
