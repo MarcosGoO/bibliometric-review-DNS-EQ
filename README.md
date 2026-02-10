@@ -4,23 +4,13 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Status](https://img.shields.io/badge/Status-In%20Progress-orange.svg)]()
 
-## 📋 Overview
+## Overview
 
 This repository contains the code, data, and analysis for a comprehensive bibliometric study mapping the landscape of **science education and educational quality** research from 2016 to 2026. The study analyzes **335 unique documents** from Scopus and Web of Science, employing advanced text mining, topic modeling, and network analysis techniques.
 
 ---
 
-## 🎯 Objectives
-
-- Map temporal trends in science education research
-- Identify thematic areas using NLP and topic modeling (LDA)
-- Analyze collaboration patterns through co-authorship networks
-- Detect research gaps (geographic, thematic, methodological)
-- Provide actionable insights for researchers and policymakers
-
----
-
-## 📊 Dataset
+## Dataset
 
 - **Total documents**: 335 unique articles
 - **Sources**: Scopus (226) + Web of Science (152)
@@ -31,35 +21,7 @@ This repository contains the code, data, and analysis for a comprehensive biblio
 
 ---
 
-## 🔬 Methodology
-
-### Phase 1: Initial Diagnostics ✅
-- Data fusion and deduplication
-- Quality assessment
-- Temporal and geographic distribution analysis
-
-### Phase 2A: Thematic Analysis (NLP) ✅
-- **Text preprocessing**: Cleaning, tokenization, stemming
-- **Keyword extraction**: TF-IDF (solved 60% missing keywords → 100% coverage)
-- **Topic modeling**: Latent Dirichlet Allocation (LDA) with optimized k
-- **Validation**: Probabilistic coherence scores
-- **Temporal analysis**: Pre-COVID, During-COVID, Post-COVID periods
-
-### Phase 2B: Network Analysis (In Progress)
-- Co-authorship networks
-- Co-citation analysis
-- Bibliographic coupling
-- International collaboration patterns
-
-### Phase 2C: Impact Analysis (Planned)
-- Author metrics (H-index, productivity)
-- Citation distribution analysis
-- Highly cited papers and "sleeping beauties"
-- Journal impact assessment
-
----
-
-## 📁 Project Structure
+## Project Structure
 
 ```
 article_didacsci/
@@ -83,7 +45,7 @@ article_didacsci/
 
 ---
 
-## 🛠️ Technologies & Tools
+## Technologies & Tools
 
 **Programming**: R 4.0+
 
@@ -98,7 +60,7 @@ article_didacsci/
 
 ---
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 - R 4.0 or higher
@@ -134,7 +96,7 @@ source("scripts/02A_analisis_tematico_NLP.R")
 
 ---
 
-## 📈 Key Findings (Preliminary)
+## Key Findings (Preliminary)
 
 ### Temporal Trends
 - **2025 Explosion**: 99 documents (+90% vs 2024) - field consolidation phase
@@ -153,7 +115,7 @@ source("scripts/02A_analisis_tematico_NLP.R")
 
 ---
 
-## 📊 Visualizations
+## Visualizations
 
 The project generates **publication-ready visualizations** (300 DPI, colorblind-friendly palettes):
 
@@ -165,7 +127,7 @@ The project generates **publication-ready visualizations** (300 DPI, colorblind-
 
 ---
 
-## 📝 Citation
+## Citation
 
 If you use this code or methodology, please cite:
 
@@ -177,7 +139,7 @@ Educational Quality: A Bibliometric Analysis (2016-2026).
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
@@ -191,7 +153,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 This is an academic research project. If you find issues or have suggestions:
 
@@ -201,7 +163,7 @@ This is an academic research project. If you find issues or have suggestions:
 
 ---
 
-## 📚 References
+## References
 
 **Key Methodological Sources**:
 - Blei, D. M., et al. (2003). Latent Dirichlet allocation. *JMLR*, 3, 993-1022.
