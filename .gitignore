@@ -1,4 +1,32 @@
+# R project files
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
+
+# Documentation interna (no publicar en GitHub)
+CONTEXTO_PROYECTO.md
+ESTRATEGIA_COMPLETA.md
+HALLAZGOS_FASE1.md
+GUIA_TECNICA_R.md
+GUIA_CONFIGURACION.md
+INICIO_RAPIDO.md
+INSTRUCCIONES_FASE_2A.md
+DECISIONES_METODOLOGICAS_FASE2A.md
+RESUMEN_FASE_2A.md
+
+# Claude Code artifacts
+.claude/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.bak
+*~
+
+# Large data files (opcional, descomentar si quieres excluir datos grandes)
+# outputs/*.csv
+# data/processed/*.rds
