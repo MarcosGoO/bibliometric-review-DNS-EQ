@@ -20,6 +20,19 @@ GIT_WORKFLOW_RAPIDO.md
 outpout_console_script_00&01.txt
 outpout_console_02.txt
 outpout_console_03.txt
+INSTRUCTIONS_REDACTATION.txt
+.RDataTmp
+final_stage.txt
+ARTICLE_1_STRUCTURE.md
+ARTICLE_2_STRUCTURE.md
+CONTEXT_FOR_NEXT_CLAUDE.md
+DECISION_AND_NEXT_STEPS.md
+LITERATURE_REVIEW_PROMPTS.md
+MANUSCRIPTS_COMPLETE_SUMMARY.md
+START_HERE_NEXT_CLAUDE.md
+
+#reviews
+literature_reviews/
 
 # Claude Code artifacts
 .claude/

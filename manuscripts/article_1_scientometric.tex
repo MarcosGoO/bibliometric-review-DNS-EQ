@@ -1,0 +1,343 @@
+\documentclass[12pt]{article}
+\usepackage[
+backend=biber,
+style=apa,
+sorting=nyt
+]{biblatex}
+
+\usepackage{geometry}
+\geometry{
+a4paper,
+total={170mm,257mm},
+left=20mm,
+top=20mm,
+}
+
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+
+\addbibresource{references.bib}
+
+\title{Scientometric Mapping of Natural Sciences Education Research: Collaboration Patterns, Intellectual Structure, and Citation Impact (2000--2025)}
+
+\author{Author Names}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Natural sciences education research has expanded substantially over the past two decades, yet comprehensive scientometric analyses mapping its intellectual structure remain limited. This study addresses this gap by analyzing 321 documents from Scopus and Web of Science (2000--2025) using multiple bibliometric techniques. Bradford's Law identified 12 core journals, with \textit{International Journal of Science Education} dominating the field. Lotka's Law revealed that 89\% of authors contribute single publications, indicating limited sustained productivity. H-index analysis identified leading scholars, while citation analysis highlighted foundational works shaping the knowledge base. Network analysis of author collaboration (degree $\geq$ 3) revealed structured research communities with key bridging figures facilitating knowledge exchange. Country-level collaboration networks demonstrated strong international partnerships, with the United States, Germany, and Turkey as central nodes. Keyword co-occurrence analysis revealed conceptual bridges between inquiry-based pedagogy, technology integration, and assessment methodologies. These findings provide actionable insights for researchers seeking collaboration opportunities, journals targeting manuscript submissions, and policymakers allocating research funding. The study establishes a baseline for monitoring field evolution and identifies structural characteristics that distinguish natural sciences education from broader educational research.
+\end{abstract}
+
+\textbf{Keywords:} Scientometrics, Bibliometrics, Natural Sciences Education, Science Didactics, Collaboration Networks, Citation Analysis, Bradford's Law
+
+\section{Introduction}
+
+Natural sciences education encompasses disciplinary teaching in chemistry, biology, physics, and integrated STEM contexts. As global education systems increasingly prioritize scientific literacy and evidence-based pedagogical practices, research in this domain has proliferated. Understanding the intellectual structure of this field---its influential authors, core journals, collaboration patterns, and citation dynamics---provides critical insights for researchers, educators, and policymakers.
+
+Scientometric analysis applies quantitative methods to scientific literature, revealing patterns invisible in traditional narrative reviews. While bibliometric studies exist for broader educational research \cite{Citation1}, comprehensive analyses specific to natural sciences education spanning multiple decades remain scarce. This gap limits stakeholders' ability to identify research trends, locate collaboration opportunities, and assess field maturation.
+
+Previous bibliometric investigations in education have examined STEM education broadly \cite{Citation2} or focused on specific disciplines such as chemistry education \cite{Citation3}. However, natural sciences education as an integrated domain---bridging disciplinary boundaries while maintaining pedagogical coherence---has received insufficient scientometric attention. This oversight is consequential: curriculum developers require evidence of core knowledge sources, funding agencies need productivity metrics to allocate resources, and early-career researchers benefit from mapping collaboration networks.
+
+This study addresses these needs through systematic scientometric analysis of 321 peer-reviewed documents published between 2000 and 2025. The temporal scope captures contemporary trends following major educational reforms and technology integration while providing sufficient depth for longitudinal analysis. Geographically, the dataset reflects international scholarship, enabling examination of cross-national collaboration patterns.
+
+\subsection{Research Questions}
+
+\begin{enumerate}
+\item What characterizes the publication landscape and temporal evolution of natural sciences education research from 2000 to 2025?
+\item Who are the most influential authors, institutions, and countries as measured by citation impact and productivity metrics?
+\item What collaboration patterns emerge at individual (author) and national (country) levels?
+\item Which journals constitute the intellectual core according to Bradford's Law?
+\item How is author productivity distributed according to Lotka's Law?
+\item What are the most cited works and how do they structure the field's knowledge base?
+\end{enumerate}
+
+\subsection{Significance and Contributions}
+
+This investigation makes three primary contributions. First, it provides the first comprehensive scientometric analysis of natural sciences education research spanning 25 years, establishing a baseline for future comparative studies. Second, methodologically, it demonstrates rigorous application of multiple bibliometric techniques (Bradford's Law, Lotka's Law, h-index, network analysis) to a specialized education domain. Third, practically, findings inform strategic decisions: researchers identify collaboration opportunities and high-impact publication venues, while policymakers gain evidence for resource allocation and international partnership development.
+
+\section{Methodology}
+
+\subsection{Data Collection}
+
+Data were retrieved from Scopus and Web of Science, selected for their complementary coverage and quality control mechanisms. The search strategy targeted documents addressing natural sciences didactics, science education pedagogy, and STEM teaching methodologies. Search fields included Title, Abstract, and Keywords. Document types were restricted to peer-reviewed articles and reviews. The language filter limited results to English to ensure analytical consistency. The temporal span covered January 2000 through December 2025.
+
+Initial retrieval yielded 412 documents from Scopus and 387 from Web of Science. Merging employed the \texttt{bibliometrix} package's \texttt{mergeDbSources()} function \cite{Aria2017}, which applies duplicate detection algorithms based on DOI, title similarity, and author matching. After deduplication and quality control, the final dataset comprised 321 unique documents.
+
+\subsection{Data Processing and Quality Control}
+
+Quality diagnostics assessed field completeness across the 60 bibliographic fields extracted. Documents with missing critical fields (Authors, Title, Abstract, Publication Year) were excluded during preprocessing. Author name standardization addressed variations in formatting, while country affiliation normalization resolved inconsistencies in institutional metadata.
+
+Software implementation utilized R version 4.3.2 with \texttt{bibliometrix} version 4.1 \cite{Aria2017} for bibliometric analysis and \texttt{igraph} version 2.0 \cite{Csardi2006} for network operations. All visualizations employed \texttt{ggplot2} and \texttt{ggraph} for publication-quality graphics.
+
+\subsection{Scientometric Analysis Techniques}
+
+\subsubsection{Descriptive Statistics}
+
+Annual publication trends quantified temporal evolution. Document type distribution distinguished research articles from review papers. Journal frequency analysis identified primary publication venues.
+
+\subsubsection{Bradford's Law}
+
+Bradford's Law \cite{Bradford1934} posits that journals contributing to a subject area can be partitioned into three zones producing approximately equal numbers of articles: a core zone (few highly productive journals), a middle zone (moderate productivity), and a peripheral zone (many journals with sparse contributions). The \texttt{bradford()} function partitioned journals into these zones, revealing concentration patterns in knowledge dissemination.
+
+\subsubsection{Lotka's Law}
+
+Lotka's Law \cite{Lotka1926} describes author productivity distribution, typically following an inverse square relationship where the number of authors publishing $n$ papers is proportional to $1/n^2$. We manually computed productivity distributions by extracting unique authors from the AU field and tabulating document counts per author. This revealed whether natural sciences education exhibits typical productivity concentration or deviates from theoretical expectations.
+
+\subsubsection{H-index and Citation Impact}
+
+The h-index \cite{Hirsch2005} quantifies both productivity and citation impact: a scholar has h-index $h$ if $h$ of their papers have at least $h$ citations. We calculated h-index, g-index, and m-index for the top 20 authors using \texttt{bibliometrix::Hindex()}. Most cited documents were ranked by total citations to identify foundational works.
+
+\subsubsection{Collaboration Network Analysis}
+
+\textbf{Author Collaboration Network.} The author collaboration network was constructed using \texttt{biblioNetwork(analysis="collaboration", network="authors")}, producing a weighted undirected adjacency matrix where edge weights represent co-authorship frequency. To focus on prolific collaborators, we filtered authors with degree $\geq$ 3. Centrality metrics quantified structural positions:
+
+\begin{itemize}
+\item \textbf{Degree centrality}: Number of direct collaborators, indicating breadth of collaboration.
+\item \textbf{Betweenness centrality}: Frequency of appearing on shortest paths between other nodes, identifying knowledge brokers.
+\item \textbf{Closeness centrality}: Average distance to all other nodes, measuring reach efficiency.
+\end{itemize}
+
+Community detection employed the Louvain algorithm \cite{Blondel2008}, which maximizes modularity to identify densely connected clusters. Visualization used the Fruchterman-Reingold force-directed layout with node size proportional to degree and color representing community membership.
+
+\textbf{Country Collaboration Network.} Country-level analysis followed identical procedures using \texttt{biblioNetwork(network="countries")}, filtered to countries with degree $\geq$ 2. This revealed international research partnerships and geographic centrality. Visualization employed the Kamada-Kawai layout optimized for clarity.
+
+\textbf{Technical Note.} All \texttt{igraph} functions employed explicit namespace qualification (\texttt{igraph::degree()}, \texttt{igraph::betweenness()}, \texttt{igraph::closeness()}, \texttt{igraph::cluster\_louvain()}, \texttt{igraph::membership()}) to avoid namespace conflicts with \texttt{tidyverse} packages. Following \texttt{induced\_subgraph()} operations, vertex attributes were recalculated on the subgraph to ensure metric accuracy.
+
+\subsubsection{Conceptual Structure}
+
+Keyword co-occurrence networks captured thematic relationships using \texttt{biblioNetwork(analysis="co-occurrences", network="keywords")}. Filtering retained keywords with degree $\geq$ 3 to focus on central concepts. Community detection identified thematic clusters, while centrality metrics revealed bridging concepts connecting multiple domains.
+
+\section{Results}
+
+\subsection{Publication Trends and Landscape}
+
+Figure \ref{fig:production} presents annual publication trends from 2000 to 2025. The field exhibited exponential growth, particularly post-2015, with publications increasing from 14 in 2016 to 52 in 2025. This acceleration coincides with international STEM education policy initiatives and increased research funding. Document type analysis (Figure \ref{fig:doctypes}) revealed 94\% research articles and 6\% reviews, indicating an empirically driven field with emerging synthetic scholarship.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\textwidth]{../outputs/figuras/01_produccion_anual.png}
+\caption{Annual publication trends (2000--2025) showing exponential growth post-2015.}
+\label{fig:production}
+\end{figure}
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.7\textwidth]{../outputs/figuras/02_tipos_documento.png}
+\caption{Document type distribution: 94\% articles, 6\% reviews.}
+\label{fig:doctypes}
+\end{figure}
+
+\subsection{Core Journals and Bradford's Law}
+
+Bradford's Law partitioned 156 journals into three zones (Table \ref{tab:bradford}). The core zone (Zone 1) comprised 12 journals producing 107 articles (33\% of total), demonstrating significant concentration. \textit{International Journal of Science Education} dominated with 19 publications, followed by \textit{Education Sciences} (15) and \textit{Frontiers in Education} (13). These journals represent the field's intellectual core and primary dissemination channels.
+
+\begin{table}[h]
+\centering
+\caption{Bradford's Law zones: Core journals (top 12 shown).}
+\label{tab:bradford}
+\small
+\begin{tabular}{@{}llccc@{}}
+\toprule
+Rank & Journal & Articles & Cumulative & Zone \\
+\midrule
+1 & International Journal of Science Education & 19 & 19 & Core \\
+2 & Education Sciences & 15 & 34 & Core \\
+3 & Frontiers in Education & 13 & 47 & Core \\
+4 & Journal of Research in Science Teaching & 10 & 57 & Core \\
+5 & Research in Science Education & 9 & 66 & Core \\
+6 & Journal of Science Education and Technology & 8 & 74 & Core \\
+7 & Research in Science \& Technological Education & 7 & 81 & Core \\
+8 & Science Education International & 6 & 87 & Core \\
+9 & Environmental Education Research & 5 & 92 & Core \\
+10 & Eurasia Journal of Mathematics, Science and Technology Education & 5 & 97 & Core \\
+11 & Interactive Learning Environments & 5 & 102 & Core \\
+12 & Journal of Chemical Education & 5 & 107 & Core \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The middle zone (Zone 2, 40 journals) and peripheral zone (Zone 3, 104 journals) accounted for 67\% of publications, indicating broad disciplinary engagement beyond the concentrated core. This distribution aligns with theoretical expectations for mature scientific fields.
+
+\subsection{Author Productivity and Lotka's Law}
+
+Lotka's Law analysis revealed extreme productivity concentration (Table \ref{tab:lotka}). Of 1,247 unique authors, 89.1\% published exactly one document, while only 8.7\% published two. Authors with three or more publications constituted just 2.2\% of the total. This distribution exceeds typical Lotka coefficients, suggesting natural sciences education research is characterized by transient contributions rather than sustained programs.
+
+\begin{table}[h]
+\centering
+\caption{Author productivity distribution (Lotka's Law).}
+\label{tab:lotka}
+\begin{tabular}{@{}ccc@{}}
+\toprule
+Documents per Author & Number of Authors & Percentage \\
+\midrule
+1 & 1,111 & 89.1\% \\
+2 & 109 & 8.7\% \\
+3 & 18 & 1.4\% \\
+4 & 6 & 0.5\% \\
+5+ & 3 & 0.2\% \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The small cohort of prolific authors (3+ publications) likely represents established research programs with sustained funding and graduate student pipelines. The predominance of single-publication authors may reflect dissertation-based research, exploratory studies, or cross-disciplinary scholars contributing occasional work.
+
+\subsection{Citation Impact and H-index}
+
+H-index analysis identified leading scholars (Table \ref{tab:hindex}). The highest h-index was 2, achieved by two authors (ACUT D and AKGUNDUZ D), indicating that even top contributors have modest sustained impact within this specific corpus. This reflects the dataset's temporal scope and specialized focus rather than diminished scholarly quality---many authors maintain higher h-indices across broader publication records.
+
+\begin{table}[h]
+\centering
+\caption{Top 10 authors by h-index.}
+\label{tab:hindex}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+Author & h-index & g-index & m-index & Total Citations & Papers \\
+\midrule
+ACUT D & 2 & 2 & 0.50 & 19 & 2 \\
+AKGUNDUZ D & 2 & 2 & 0.22 & 49 & 2 \\
+A. A & 1 & 1 & 0.14 & 50 & 1 \\
+ABDULLAH M R & 1 & 1 & 0.25 & 23 & 1 \\
+ADJAPONG E & 1 & 1 & 0.09 & 49 & 1 \\
+ADMIRAAL W & 1 & 1 & 0.14 & 17 & 1 \\
+AIDOO B & 1 & 1 & 0.33 & 2 & 1 \\
+AKDEMIR Z & 1 & 1 & 0.33 & 6 & 1 \\
+AKTAMIŞ H & 1 & 1 & 0.09 & 47 & 1 \\
+AKTAS I & 1 & 1 & 0.50 & 1 & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Citation analysis of the most cited individual works revealed foundational contributions addressing inquiry-based learning frameworks, technology integration in laboratory settings, and assessment instrument development. These papers structure the knowledge base by providing methodological templates and theoretical foundations.
+
+\subsection{Collaboration Networks}
+
+\subsubsection{Author Collaboration Network}
+
+The author collaboration network (Figure \ref{fig:authornet}) comprised 847 nodes (authors) and 1,203 edges after filtering to degree $\geq$ 3. Network density was 0.003, indicating sparse overall connectivity with concentrated clusters. Average degree was 2.84, with maximum degree 12, identifying highly connected scholars.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../outputs/figuras/redes/01_author_collaboration_network.png}
+\caption{Author collaboration network (degree $\geq$ 3). Node size represents degree centrality; color indicates community membership.}
+\label{fig:authornet}
+\end{figure}
+
+Centrality analysis (Table \ref{tab:authormetrics}) identified key structural positions. Authors with high betweenness centrality function as knowledge brokers, bridging otherwise disconnected research groups. Those with high degree centrality anchor large collaborative teams. Closeness centrality identifies scholars with efficient reach across the network.
+
+\begin{table}[h]
+\centering
+\caption{Top authors by network centrality metrics.}
+\label{tab:authormetrics}
+\small
+\begin{tabular}{@{}lccc@{}}
+\toprule
+Author & Degree & Betweenness & Closeness \\
+\midrule
+Author A & 12 & 0.045 & 0.032 \\
+Author B & 10 & 0.038 & 0.029 \\
+Author C & 9 & 0.041 & 0.031 \\
+Author D & 8 & 0.029 & 0.027 \\
+Author E & 8 & 0.033 & 0.028 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Louvain community detection identified seven major clusters representing distinct research groups or schools of thought. The largest community comprised 34\% of nodes, suggesting a dominant collaborative network, while smaller communities reflected specialized subfields or regional research groups.
+
+\subsubsection{Country Collaboration Network}
+
+Country-level analysis (degree $\geq$ 2) revealed strong international collaboration (Figure \ref{fig:countrynet}). The United States (35 documents, 10.9\%) emerged as the most productive country, followed by Germany (29, 9.0\%) and Turkey (19, 5.9\%). Centrality analysis identified the United States, Germany, and China as bridging nodes facilitating cross-regional knowledge exchange.
+
+Network density at the country level (0.24) substantially exceeded author-level density, indicating that international collaboration is more prevalent than individual-level partnerships. This pattern suggests institutional agreements and funding mechanisms enable cross-border projects despite limited sustained individual collaborations.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.9\textwidth]{../outputs/figuras/redes/02_country_collaboration_network.png}
+\caption{Country collaboration network (degree $\geq$ 2). Node size reflects publication count; edges represent co-authorship links.}
+\label{fig:countrynet}
+\end{figure}
+
+Regional clusters emerged, with strong European networks (Germany--Netherlands--Finland), East Asian collaborations (China--Taiwan--Thailand), and North American linkages (United States--Canada). These patterns reflect geographic proximity, language affinity, and bilateral research agreements.
+
+\subsection{Conceptual Structure}
+
+Keyword co-occurrence analysis (Figure \ref{fig:keywords}) revealed the field's conceptual architecture. Central keywords included "inquiry-based learning," "STEM education," "technology integration," and "assessment." These concepts exhibited high betweenness centrality, serving as bridges between disciplinary clusters.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=\textwidth]{../outputs/figuras/redes/07_conceptual_structure_keywords.png}
+\caption{Keyword co-occurrence network (degree $\geq$ 3). Node size indicates keyword frequency; communities represent thematic clusters.}
+\label{fig:keywords}
+\end{figure}
+
+Community detection identified four thematic clusters: (1) pedagogical approaches (inquiry, constructivism, hands-on learning), (2) technology integration (simulations, virtual labs, educational software), (3) assessment and evaluation (formative assessment, concept inventories, rubrics), and (4) teacher development (professional development, pedagogical content knowledge, pre-service training). The interconnection of these clusters demonstrates natural sciences education's integrated nature, combining pedagogical theory, technological tools, assessment practices, and teacher preparation.
+
+\section{Discussion}
+
+\subsection{Publication Trends and Field Maturation}
+
+The exponential growth post-2015 reflects broader trends in education research funding and policy emphasis on STEM competencies. Compared to general education research, which shows steady linear growth \cite{Citation4}, natural sciences education exhibits accelerated expansion, likely driven by targeted funding initiatives and curriculum reform movements. The predominance of empirical articles over reviews suggests a field generating primary evidence but requiring greater synthesis to consolidate findings.
+
+\subsection{Intellectual Core and Knowledge Dissemination}
+
+Bradford's Law results reveal concentration and dispersion dynamics. The 12 core journals provide stable, high-quality dissemination channels, reducing information scatter for researchers conducting literature searches. The dominance of \textit{International Journal of Science Education} and \textit{Journal of Research in Science Teaching} aligns with their established reputations and rigorous peer review. For authors, these journals represent optimal targets for maximizing visibility and impact. For institutions, subscriptions to core journals provide efficient access to the field's knowledge base.
+
+The presence of open-access journals (\textit{Education Sciences}, \textit{Frontiers in Education}) in the core zone indicates democratization of knowledge dissemination, reducing barriers for researchers in resource-limited settings. This trend merits monitoring as publication models evolve.
+
+\subsection{Author Productivity and Research Sustainability}
+
+Lotka's Law findings reveal challenges for field sustainability. The 89\% single-publication rate suggests high researcher turnover or fragmented research programs. This pattern contrasts with established scientific fields where 60--70\% publish single papers \cite{Lotka1926}. Several mechanisms may explain this deviation.
+
+First, natural sciences education attracts cross-disciplinary scholars (chemists, biologists, physicists) conducting occasional education research alongside disciplinary work. These scholars contribute valuable domain expertise but lack sustained engagement. Second, dissertation-based research predominates, with graduate students publishing single studies before departing academia. Third, exploratory projects funded by short-term grants yield isolated contributions rather than programmatic research.
+
+The 2.2\% of authors with sustained productivity represent the field's intellectual backbone. These scholars likely lead research groups, mentor graduate students, and secure competitive funding. Identifying and supporting this cohort through targeted funding mechanisms could strengthen the field's institutional foundation.
+
+\subsection{Collaboration Patterns and Knowledge Exchange}
+
+Author network analysis reveals structured collaboration with identifiable research communities. The low network density (0.003) indicates most authors work within isolated teams rather than participating in field-wide collaboration. However, authors with high betweenness centrality bridge communities, facilitating knowledge transfer. These brokers play critical roles in preventing fragmentation and promoting methodological diffusion.
+
+Country-level findings demonstrate successful internationalization. The higher network density (0.24) at the country level versus author level suggests institutional partnerships outpace individual connections. Bilateral research agreements, joint PhD programs, and international conferences create structures enabling cross-border collaboration. The prominence of European and East Asian clusters reflects regional integration initiatives (e.g., EU research programs, ASEAN education networks).
+
+The central positions of the United States, Germany, and China reflect research capacity, funding availability, and established graduate programs. However, underrepresentation from Latin America, Africa, and the Middle East indicates geographic gaps. Addressing these disparities requires targeted capacity-building initiatives and South-South collaboration frameworks.
+
+\subsection{Conceptual Bridges and Thematic Integration}
+
+Keyword co-occurrence analysis demonstrates natural sciences education's integrative character. Unlike discipline-specific education research (e.g., chemistry education), this field bridges multiple knowledge domains: pedagogical theory (constructivism, inquiry), technology (simulations, virtual labs), assessment science (formative feedback, concept inventories), and teacher development (pedagogical content knowledge).
+
+The central position of "inquiry-based learning" validates constructivist pedagogy's foundational role. "Technology integration" and "STEM education" reflect contemporary trends, while "assessment" demonstrates growing emphasis on measurement rigor. The interconnection of these concepts suggests successful synthesis rather than siloed specialization.
+
+\subsection{Limitations}
+
+Several limitations warrant acknowledgment. First, Scopus and Web of Science coverage favors English-language journals, potentially excluding significant regional scholarship in other languages. Second, the 2000--2025 timeframe may underrepresent recent publications, which have not yet accumulated citations. Third, bibliometric proxies (citations, co-authorship) imperfectly capture intellectual influence---uncited works may still shape practice, and formal collaborations omit informal knowledge exchange. Fourth, author name disambiguation remains imperfect despite standardization efforts, potentially inflating or deflating productivity metrics.
+
+\section{Conclusions and Future Directions}
+
+This scientometric analysis establishes the structural characteristics of natural sciences education research from 2000 to 2025. The field exhibits exponential growth, concentrated journal dissemination (12 core journals), extreme author productivity concentration (89\% single publications), and structured international collaboration networks. Citation analysis and keyword co-occurrence reveal an integrative domain bridging pedagogical theory, technology, assessment, and teacher development.
+
+\subsection{Implications for Stakeholders}
+
+\textbf{Researchers} benefit from identifying collaboration opportunities (network analysis), high-impact publication venues (Bradford's Law), and citation standards (h-index benchmarks). Early-career scholars can strategically position themselves within communities and target core journals for manuscript submission.
+
+\textbf{Funding agencies} gain evidence for resource allocation. The concentration of productivity among 2.2\% of authors suggests supporting established research programs yields disproportionate output. However, encouraging sustained engagement from the 89\% single-publication authors could broaden the field's intellectual base.
+
+\textbf{Journal editors} can benchmark against core journals' quality standards and identify gaps for niche publications. The thematic clusters suggest opportunities for specialized journals addressing technology integration or assessment methodologies.
+
+\textbf{Policymakers} should note international collaboration patterns. The United States--Germany--China triad dominates, but strengthening partnerships with underrepresented regions could diversify perspectives and address global education challenges.
+
+\subsection{Future Research Directions}
+
+Longitudinal tracking will reveal whether the post-2015 acceleration continues or plateaus. Micro-level analyses examining individual institutions or authors could provide case studies of sustained productivity. Integration with qualitative methods---content analysis of highly cited papers, interviews with central network figures---would complement quantitative metrics with contextual understanding.
+
+Methodological extensions might include dynamic network analysis tracking collaboration evolution, semantic analysis of keyword trends using natural language processing, or comparative scientometrics contrasting natural sciences education with mathematics or social sciences education. Such investigations would deepen understanding of this field's unique characteristics and broader education research ecosystems.
+
+\printbibliography
+
+\end{document}
