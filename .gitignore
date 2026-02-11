@@ -26,6 +26,11 @@ Thumbs.db
 *.bak
 *~
 
+#mnuscripts files
+manuscripts/
+
+
+
 # Large data files (opcional, descomentar si quieres excluir datos grandes)
 # outputs/*.csv
 # data/processed/*.rds

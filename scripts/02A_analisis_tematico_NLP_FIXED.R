@@ -345,8 +345,6 @@ p1 <- ggplot(topics_by_year, aes(x = year_clean, y = topic_label, fill = pct)) +
   scale_fill_viridis_c(option = "plasma", name = "% Documents") +
   scale_x_continuous(breaks = seq(2016, 2026, 1)) +
   labs(
-    title = "Temporal Evolution of Topics (2016-2026)",
-    subtitle = paste(nrow(df_trabajo), "documents |", optimal_k, "topics"),
     x = "Year", y = NULL
   )
 
@@ -393,8 +391,6 @@ p2 <- ggplot(alluvial_data,
   scale_fill_manual(values = palette_topics) +
   scale_color_identity() +
   labs(
-    title = "Evolution of Topics across Periods",
-    subtitle = "Pre-COVID → During COVID → Post-COVID",
     x = NULL, y = "Number of Documents"
   ) +
   theme(legend.position = "none")
@@ -477,12 +473,7 @@ if (nrow(keyword_cooc) > 0) {
     geom_node_text(aes(label = name), size = 3, repel = TRUE, max.overlaps = 20) +
     scale_edge_width_continuous(range = c(0.5, 2), name = "Co-occurrence") +
     scale_size_continuous(range = c(3, 12), name = "Frequency") +
-    scale_color_viridis_d(name = "Cluster") +
-    labs(
-      title = "Keywords Co-occurrence Network",
-      subtitle = paste("Top 50 keywords |", length(unique(V(g_keywords)$cluster)), "clusters")
-    ) +
-    theme_graph() +
+    scale_color_viridis_d(name = "Cluster") + theme_graph() +
     theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
       plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40")
@@ -510,8 +501,6 @@ p5 <- ggplot(topics_trend, aes(x = year_clean, y = pct, color = topic_label)) +
   scale_x_continuous(breaks = seq(2016, 2025, 1)) +
   scale_y_continuous(labels = function(x) paste0(x, "%")) +
   labs(
-    title = "Temporal Trends of Topics (2016-2025)",
-    subtitle = "Relative proportion per year",
     x = "Year", y = "% of total per year"
   ) +
   theme(
@@ -563,8 +552,6 @@ if ("RP" %in% names(M) && any(!is.na(M$RP))) {
     scale_fill_viridis_c(option = "plasma") +
     ylim(0, max(paises$Documents) * 1.15) +
     labs(
-      title = "Geographic Distribution of Scientific Production",
-      subtitle = "Top 15 countries by number of publications",
       x = NULL, y = "Number of Documents"
     )
 
@@ -591,8 +578,6 @@ p7 <- ggplot(topic_dist, aes(x = reorder(topic_label, n), y = n, fill = topic_la
   scale_fill_manual(values = palette_topics) +
   ylim(0, max(topic_dist$n) * 1.15) +
   labs(
-    title = "Distribution of Documents by Topic",
-    subtitle = paste("Total:", nrow(df_trabajo), "documents"),
     x = NULL, y = "Number of Documents"
   )
 
