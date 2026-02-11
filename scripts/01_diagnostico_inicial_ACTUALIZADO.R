@@ -244,9 +244,9 @@ p2 <- ggplot(tipos_doc, aes(x = reorder(Tipo, n), y = n, fill = Tipo)) +
   scale_fill_viridis_d() +
   theme_minimal() +
   labs(
-    title = "Distribución por Tipo de Documento",
+    title = "Distribution by Document Type",
     x = NULL,
-    y = "Número de Documentos"
+    y = "Number of Documents"
   ) +
   theme(plot.title = element_text(face = "bold"))
 

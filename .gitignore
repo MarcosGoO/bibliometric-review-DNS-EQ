@@ -5,31 +5,11 @@
 .Ruserdata
 
 # Documentation interna (no publicar en GitHub)
-CONTEXTO_PROYECTO.md
-ESTRATEGIA_COMPLETA.md
-HALLAZGOS_FASE1.md
-GUIA_TECNICA_R.md
-GUIA_CONFIGURACION.md
-INICIO_RAPIDO.md
-INSTRUCCIONES_FASE_2A.md
-DECISIONES_METODOLOGICAS_FASE2A.md
-RESUMEN_FASE_2A.md
-ORGANIZACION_GITHUB.md
-BRANCHING_STRATEGY.md
-GIT_WORKFLOW_RAPIDO.md
-outpout_console_script_00&01.txt
-outpout_console_02.txt
-outpout_console_03.txt
 INSTRUCTIONS_REDACTATION.txt
 .RDataTmp
-final_stage.txt
-ARTICLE_1_STRUCTURE.md
-ARTICLE_2_STRUCTURE.md
-CONTEXT_FOR_NEXT_CLAUDE.md
-DECISION_AND_NEXT_STEPS.md
-LITERATURE_REVIEW_PROMPTS.md
-MANUSCRIPTS_COMPLETE_SUMMARY.md
-START_HERE_NEXT_CLAUDE.md
+
+# md files (opcional, descomentar si no quieres incluir archivos markdown)
+instructions (md)/*.md
 
 #reviews
 literature_reviews/

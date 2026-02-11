@@ -97,23 +97,21 @@ cat("  Collaboration edges:", ecount(net_authors), "\n")
 cat("  Communities detected:", length(unique(V(net_authors)$community)), "\n")
 cat("  Top authors (degree >= 3):", vcount(subnet_authors), "\n\n")
 
-# Visualization
+# Visualization - NO TITLE (redundant with manuscript caption)
+# Community legend simplified to avoid excessive width
 p1 <- ggraph(subnet_authors, layout = "fr") +
   geom_edge_link(aes(width = weight), alpha = 0.3, color = "gray60") +
   geom_node_point(aes(size = degree, color = factor(community)), alpha = 0.7) +
-  geom_node_text(aes(label = name), size = 2.5, repel = TRUE, max.overlaps = 15) +
+  geom_node_text(aes(label = name), size = 3.5, repel = TRUE, max.overlaps = 15) +
   scale_edge_width_continuous(range = c(0.3, 2), name = "Collaborations") +
   scale_size_continuous(range = c(3, 10), name = "Degree") +
-  scale_color_viridis_d(name = "Community") +
-  labs(
-    title = "Author Collaboration Network",
-    subtitle = paste("Top authors with ≥3 collaborations |",
-                     length(unique(V(subnet_authors)$community)), "communities")
-  ) +
+  scale_color_viridis_d(name = "Community", guide = "none") +  # Remove legend to save space
   theme_graph() +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
-    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40")
+    text = element_text(size = 13),  # Increase base font size
+    axis.text = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 13, face = "bold")
   )
 
 ggsave("outputs/figuras/redes/01_author_collaboration_network.png", p1,
@@ -141,12 +139,34 @@ write.csv(author_metrics, "outputs/tablas/redes/01_top_authors_metrics.csv",
 
 cat("STEP 2: Country collaboration network analysis...\n")
 
-# Validate AU_CO field exists
-if (!"AU_CO" %in% names(M) || all(is.na(M$AU_CO))) {
-  cat("  WARNING: AU_CO field missing or empty. Skipping country network.\n\n")
+# Extract countries from RP field and create collaboration matrix manually
+if (!"RP" %in% names(M) || all(is.na(M$RP))) {
+  cat("  WARNING: RP field missing or empty. Skipping country network.\n\n")
 } else {
+  # Extract countries from RP field (same method as Phase 2A)
+  M_with_countries <- M %>%
+    filter(!is.na(RP) & RP != "") %>%
+    mutate(
+      country = str_extract(RP, "[^,]+$"),
+      country = str_remove(country, ";.*$"),
+      country = trimws(country),
+      country = toupper(country),
+      # Standardize country names
+      country = case_when(
+        country == "PEOPLES R CHINA" ~ "CHINA",
+        country == "TURKIYE" ~ "TURKEY",
+        TRUE ~ country
+      )
+    ) %>%
+    filter(!is.na(country) & country != "")
+
+  # For collaboration network, we need AU_CO format (semicolon-separated countries per document)
+  # Since we only have one country per document from RP, we'll use metaTagExtraction
+  M_temp <- M
+  M_temp$AU_CO <- M_with_countries$country[match(M$SR, M_with_countries$SR)]
+
   # Create country collaboration network
-  NetMatrix_countries <- biblioNetwork(M,
+  NetMatrix_countries <- biblioNetwork(M_temp,
                                        analysis = "collaboration",
                                        network = "countries",
                                        sep = ";")
@@ -171,22 +191,20 @@ cat("  Total countries:", vcount(net_countries), "\n")
 cat("  Collaboration edges:", ecount(net_countries), "\n")
 cat("  Top countries (degree >= 2):", vcount(subnet_countries), "\n\n")
 
-# Visualization
+# Visualization - NO TITLE (redundant with manuscript caption)
 p2 <- ggraph(subnet_countries, layout = "kk") +
   geom_edge_link(aes(width = weight), alpha = 0.4, color = "steelblue") +
   geom_node_point(aes(size = degree), color = "darkblue", alpha = 0.7) +
-  geom_node_text(aes(label = name), size = 3.5, repel = TRUE,
+  geom_node_text(aes(label = name), size = 4.5, repel = TRUE,
                  fontface = "bold", max.overlaps = 20) +
   scale_edge_width_continuous(range = c(0.5, 3), name = "Collaborations") +
   scale_size_continuous(range = c(5, 15), name = "Degree") +
-  labs(
-    title = "Country Collaboration Network",
-    subtitle = paste("Countries with ≥2 international collaborations")
-  ) +
   theme_graph() +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
-    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40")
+    text = element_text(size = 13),
+    axis.text = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 13, face = "bold")
   )
 
 ggsave("outputs/figuras/redes/02_country_collaboration_network.png", p2,
@@ -198,7 +216,7 @@ country_metrics <- data.frame(
   Degree = V(subnet_countries)$degree,
   Betweenness = round(V(subnet_countries)$betweenness, 3),
   Collaborations = sapply(1:vcount(subnet_countries), function(i) {
-    sum(E(subnet_countries)[inc(i)]$weight)
+    sum(E(subnet_countries)[.inc(i)]$weight)  # Updated for igraph 2.1.0+
   }),
   stringsAsFactors = FALSE
 ) %>%
@@ -231,9 +249,43 @@ bradford_zones <- bradford$table %>%
 write.csv(bradford_zones, "outputs/tablas/cienciometria/03_bradford_zones.csv",
           row.names = FALSE)
 
-# Bradford plot - skip plotting (bradford object structure issue)
-# The table with zones is already saved, which is the key output
-cat("  Bradford plot skipped (table saved successfully)\n")
+# Bradford plot - create manually from zones data
+bradford_plot_data <- bradford_zones %>%
+  group_by(Zone) %>%
+  summarise(
+    Journals = n(),
+    Articles = sum(Freq),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    Zone = factor(Zone, levels = c("Core (Zone 1)", "Middle (Zone 2)", "Peripheral (Zone 3)"))
+  )
+
+p_bradford <- ggplot(bradford_plot_data, aes(x = Zone, y = Articles, fill = Zone)) +
+  geom_col(alpha = 0.8, width = 0.7) +
+  geom_text(aes(label = paste0(Articles, "\n(", Journals, " journals)")),
+            vjust = -0.5, size = 5, fontface = "bold") +
+  scale_fill_manual(
+    values = c("Core (Zone 1)" = "#1f78b4",
+               "Middle (Zone 2)" = "#33a02c",
+               "Peripheral (Zone 3)" = "#e31a1c"),
+    guide = "none"
+  ) +
+  labs(
+    x = NULL,
+    y = "Number of Articles"
+  ) +
+  ylim(0, max(bradford_plot_data$Articles) * 1.15) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 13),
+    axis.text = element_text(size = 12, face = "bold"),
+    axis.title = element_text(size = 13, face = "bold"),
+    panel.grid.major.x = element_blank()
+  )
+
+ggsave("outputs/figuras/cienciometria/03_bradford_law.png", p_bradford,
+       width = 10, height = 7, dpi = 300, bg = "white")
 
 cat("  Core journals (Zone 1):", sum(bradford_zones$Zone == "Core (Zone 1)"), "\n")
 cat("  Middle journals (Zone 2):", sum(bradford_zones$Zone == "Middle (Zone 2)"), "\n")
@@ -267,6 +319,28 @@ if ("AU" %in% names(M) && !all(is.na(M$AU))) {
 
   write.csv(author_prod, "outputs/tablas/cienciometria/04_lotka_distribution.csv",
             row.names = FALSE)
+
+  # Lotka's Law visualization
+  p_lotka <- ggplot(author_prod %>% filter(Documents_per_Author <= 5),
+                    aes(x = factor(Documents_per_Author), y = N_Authors)) +
+    geom_col(fill = "#e41a1c", alpha = 0.8, width = 0.7) +
+    geom_text(aes(label = paste0(N_Authors, "\n(", Pct_Authors, "%)")),
+              vjust = -0.5, size = 5, fontface = "bold") +
+    labs(
+      x = "Documents per Author",
+      y = "Number of Authors"
+    ) +
+    ylim(0, max(author_prod$N_Authors) * 1.15) +
+    theme_minimal() +
+    theme(
+      text = element_text(size = 13),
+      axis.text = element_text(size = 12, face = "bold"),
+      axis.title = element_text(size = 13, face = "bold"),
+      panel.grid.major.x = element_blank()
+    )
+
+  ggsave("outputs/figuras/cienciometria/04_lotka_law.png", p_lotka,
+         width = 10, height = 7, dpi = 300, bg = "white")
 
   cat("  Author productivity distribution saved\n")
   cat("  Authors with 1 document:", author_prod$N_Authors[author_prod$Documents_per_Author == 1], "\n")
@@ -307,18 +381,23 @@ top_h <- as.data.frame(hindex_authors$H) %>%
 write.csv(top_h, "outputs/tablas/cienciometria/05_h_index_authors.csv",
           row.names = FALSE)
 
-# H-index visualization
+# H-index visualization - NO TITLE
 p5 <- ggplot(top_h %>% head(15),
              aes(x = reorder(Author, h_index), y = h_index)) +
   geom_col(fill = "steelblue", alpha = 0.8) +
-  geom_text(aes(label = h_index), hjust = -0.3, size = 3.5) +
+  geom_text(aes(label = h_index), hjust = -0.3, size = 5) +
   coord_flip() +
   ylim(0, max(top_h$h_index) * 1.15) +
   labs(
-    title = "Top 15 Authors by H-Index",
-    subtitle = "Based on local citation data",
     x = NULL,
     y = "H-Index"
+  ) +
+  theme_minimal() +
+  theme(
+    text = element_text(size = 13),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 13, face = "bold"),
+    panel.grid.major.y = element_blank()
   )
 
 ggsave("outputs/figuras/cienciometria/05_h_index_top_authors.png", p5,
@@ -392,23 +471,20 @@ cat("  Keyword nodes:", vcount(subnet_keywords), "\n")
 cat("  Co-occurrence edges:", ecount(subnet_keywords), "\n")
 cat("  Thematic clusters:", length(unique(subnet_communities)), "\n\n")
 
-# Visualization
+# Visualization - NO TITLE, community legend removed
 p7 <- ggraph(subnet_keywords, layout = "fr") +
   geom_edge_link(aes(width = weight), alpha = 0.2, color = "gray50") +
   geom_node_point(aes(size = degree, color = factor(community)), alpha = 0.7) +
-  geom_node_text(aes(label = name), size = 2.5, repel = TRUE, max.overlaps = 20) +
+  geom_node_text(aes(label = name), size = 3.5, repel = TRUE, max.overlaps = 20) +
   scale_edge_width_continuous(range = c(0.3, 1.5), name = "Co-occurrences") +
   scale_size_continuous(range = c(3, 10), name = "Degree") +
-  scale_color_viridis_d(name = "Cluster") +
-  labs(
-    title = "Conceptual Structure: Keyword Co-occurrence Network",
-    subtitle = paste("Top keywords with ≥3 connections |",
-                     length(unique(subnet_communities)), "thematic clusters")
-  ) +
+  scale_color_viridis_d(name = "Cluster", guide = "none") +  # Remove legend
   theme_graph() +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
-    plot.subtitle = element_text(hjust = 0.5, size = 10, color = "gray40")
+    text = element_text(size = 13),
+    axis.text = element_text(size = 12),
+    legend.text = element_text(size = 12),
+    legend.title = element_text(size = 13, face = "bold")
   )
 
 ggsave("outputs/figuras/redes/07_conceptual_structure_keywords.png", p7,
@@ -438,20 +514,23 @@ thematic_evolution <- df_topics %>%
   mutate(pct = n / sum(n) * 100) %>%
   ungroup()
 
-# Thematic map
+# Thematic map - NO TITLE
 p8 <- ggplot(thematic_evolution,
              aes(x = period, y = pct, fill = topic_label, group = topic_label)) +
   geom_area(alpha = 0.7, color = "white", size = 0.3) +
   scale_fill_viridis_d(option = "D", name = "Topic") +
   labs(
-    title = "Thematic Evolution Across Periods",
-    subtitle = "Relative topic prominence over time",
     x = NULL,
     y = "% of Documents"
   ) +
+  theme_minimal() +
   theme(
+    text = element_text(size = 13),
+    axis.text = element_text(size = 12),
+    axis.title = element_text(size = 13, face = "bold"),
     legend.position = "right",
-    legend.text = element_text(size = 8)
+    legend.text = element_text(size = 11),
+    legend.title = element_text(size = 12, face = "bold")
   )
 
 ggsave("outputs/figuras/cienciometria/08_thematic_evolution.png", p8,
