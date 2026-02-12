@@ -20,6 +20,8 @@ top=20mm,
 \usepackage{caption}
 \usepackage{subcaption}
 \usepackage{amsmath}
+\usepackage[htt]{hyphenat}
+\usepackage{placeins}  % For \FloatBarrier
 
 \addbibresource{references.bib}
 
@@ -40,11 +42,11 @@ Natural sciences education research spans diverse themes, yet systematic mapping
 
 \section{Introduction}
 
-Natural sciences education research addresses pedagogical challenges in chemistry, biology, physics, and integrated STEM contexts. As this field expands---evidenced by exponential publication growth since 2015 \cite{Article1}---understanding its thematic structure becomes critical for researchers, curriculum developers, and policymakers. Traditional literature reviews, while valuable, suffer from scalability limitations and subjective selection bias. Computational text mining methods overcome these constraints by systematically analyzing large document corpora.
+Natural sciences education research addresses pedagogical challenges in chemistry, biology, physics, and integrated STEM contexts. As this field expands---evidenced by exponential publication growth since 2015 \cite{Citation1}---understanding its thematic structure becomes critical for researchers, curriculum developers, and policymakers. Traditional literature reviews, while valuable, suffer from scalability limitations and subjective selection bias. Computational text mining methods overcome these constraints by systematically analyzing large document corpora.
 
 Latent Dirichlet Allocation (LDA) \cite{Blei2003}, an unsupervised machine learning technique, detects latent thematic structures in text collections. LDA assumes documents comprise mixtures of topics, where topics are probability distributions over words. By analyzing word co-occurrence patterns across documents, LDA infers underlying topics without requiring predefined categories. This approach has been successfully applied to educational research \cite{Citation1}, scientific literature analysis \cite{Citation2}, and policy document examination \cite{Citation3}.
 
-Despite LDA's widespread adoption in other domains, natural sciences education research lacks comprehensive topic modeling studies spanning multiple decades. Existing bibliometric analyses \cite{Article1} have examined collaboration networks and citation patterns but have not systematically mapped thematic content or temporal evolution. This gap limits stakeholders' ability to identify emerging research directions, allocate funding to underexplored areas, or align curriculum development with contemporary scholarship.
+Despite LDA's widespread adoption in other domains, natural sciences education research lacks comprehensive topic modeling studies spanning multiple decades. Existing bibliometric analyses \cite{Citation1,Citation3} have examined collaboration networks and citation patterns but have not systematically mapped thematic content or temporal evolution. This gap limits stakeholders' ability to identify emerging research directions, allocate funding to underexplored areas, or align curriculum development with contemporary scholarship.
 
 \subsection{Research Context}
 
@@ -70,7 +72,7 @@ This investigation makes four primary contributions. First, it provides the firs
 
 \subsection{Data Collection}
 
-Data collection procedures followed protocols detailed in a companion scientometric study \cite{Article1}. Briefly, documents were retrieved from Scopus and Web of Science using search strategies targeting natural sciences didactics, science education pedagogy, and STEM teaching methodologies. Searches covered Title, Abstract, and Keywords fields, restricting to peer-reviewed articles and reviews in English from January 2000 through December 2025. After merging via \texttt{bibliometrix::mergeDbSources()} \cite{Aria2017} and quality control, the final corpus comprised 321 unique documents.
+Documents were retrieved from Scopus and Web of Science using search strategies targeting natural sciences didactics, science education pedagogy, and STEM teaching methodologies. Searches covered Title, Abstract, and Keywords fields, restricting to peer-reviewed articles and reviews in English from January 2000 through December 2025. After merging via \texttt{biblio\-metrix::\allowbreak merge\-Db\-Sources()} \cite{Aria2017} and quality control, the final corpus comprised 321 unique documents.
 
 \subsection{Text Preprocessing}
 
@@ -81,9 +83,9 @@ Preprocessing steps included:
 \begin{enumerate}
 \item \textbf{Tokenization}: Text split into individual words using whitespace and punctuation delimiters.
 \item \textbf{Lowercase conversion}: All characters standardized to lowercase to ensure case-insensitive matching.
-\item \textbf{Stopword removal}: Common words lacking semantic content (e.g., "the," "and," "of") removed using an extended stopword list combining standard English stopwords with domain-specific terms (e.g., "study," "research," "paper").
-\item \textbf{Lemmatization}: Words reduced to base forms using \texttt{udpipe} \cite{Straka2017} with English language models (e.g., "learning" $\to$ "learn," "students" $\to$ "student").
-\item \textbf{Bigram detection}: Statistically significant two-word phrases identified using pointwise mutual information (PMI) thresholds, capturing compound concepts (e.g., "inquiry\_based," "stem\_education," "virtual\_laboratory").
+\item \textbf{Stopword removal}: Common words lacking semantic content (e.g., ``the,'' ``and,'' ``of'') removed using an extended stopword list combining standard English stopwords with domain-specific terms (e.g., ``study,'' ``research,'' ``paper'').
+\item \textbf{Lemmatization}: Words reduced to base forms using \texttt{udpipe} \cite{Straka2017} with English language models (e.g., ``learning'' $\to$ ``learn,'' ``students'' $\to$ ``student'').
+\item \textbf{Bigram detection}: Statistically significant two-word phrases identified using pointwise mutual information (PMI) thresholds, capturing compound concepts (e.g., ``inquiry\_based,'' ``stem\_education,'' ``virtual\_laboratory'').
 \item \textbf{Frequency filtering}: Terms appearing in fewer than 5 documents (too rare) or more than 80\% of documents (too common) excluded to focus on discriminative vocabulary.
 \end{enumerate}
 
@@ -111,9 +113,9 @@ where $T$ is the number of topics, $N$ is the number of top words per topic, and
 
 Model selection balanced these metrics: perplexity decreased monotonically with $k$, while coherence peaked at $k=9$ (Figure \ref{fig:optimization}). Human interpretability assessment confirmed $k=9$ produced distinct, semantically meaningful topics without excessive fragmentation. Therefore, $k=9$ was selected as optimal.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=0.9\textwidth]{../outputs/figuras/tematicas/00_lda_optimization_metrics.png}
+\includegraphics[width=0.9\textwidth]{figuras/00_lda_optimization_metrics.png}
 \caption{LDA model optimization: perplexity and coherence across $k \in \{2, 3, \ldots, 10\}$. Optimal $k=9$ balances fit and interpretability.}
 \label{fig:optimization}
 \end{figure}
@@ -130,7 +132,7 @@ The final LDA model employed Gibbs sampling with the following parameters:
 \item \textbf{Beta}: $0.01$ (sparse Dirichlet prior for topic-word distributions, encouraging topic specificity)
 \end{itemize}
 
-Implementation used the \texttt{topicmodels} package \cite{Grun2011} in R.
+Implementation used the \texttt{topic\-models} package \cite{Grun2011} in R.
 
 \subsubsection{Topic Interpretation and Labeling}
 
@@ -150,7 +152,7 @@ Trend detection employed linear regression of topic prevalence over time, with s
 
 \subsection{Geographic Analysis}
 
-Geographic variation was examined by extracting author country affiliations from the AU\_CO metadata field. For each country with $\geq 10$ documents (ensuring robust estimates), we calculated topic prevalence:
+Geographic variation was examined by extracting author country affiliations from metadata fields. For each country with $\geq 10$ documents (ensuring robust estimates), we calculated topic prevalence:
 
 \begin{equation}
 \text{Prevalence}(t, c) = \frac{\sum_{d \in D_c} \gamma_{d,t}}{|D_c|}
@@ -162,7 +164,7 @@ Thematic specialization was identified by comparing country-specific topic distr
 
 \subsection{Keyword Co-occurrence Analysis}
 
-To complement LDA's probabilistic approach, we constructed keyword co-occurrence networks using author-provided keywords. Networks were built via \texttt{biblioNetwork(analysis="co-occurrences", network="keywords")} in \texttt{bibliometrix} \cite{Aria2017}, filtered to keywords with degree $\geq 3$ to focus on central concepts. Community detection via the Louvain algorithm \cite{Blondel2008} identified thematic clusters, while centrality metrics (degree, betweenness) revealed bridging concepts connecting multiple domains.
+To complement LDA's probabilistic approach, we constructed keyword co-occurrence networks using author-provided keywords. Networks were built via \texttt{biblio\-Network(\allowbreak analysis=\allowbreak"co-\allowbreak occur\-rences",\allowbreak network=\allowbreak"key\-words")} in \texttt{biblio\-metrix} \cite{Aria2017}, filtered to keywords with degree $\geq 3$ to focus on central concepts. Community detection via the Louvain algorithm \cite{Blondel2008} identified thematic clusters, while centrality metrics (degree, betweenness) revealed bridging concepts connecting multiple domains.
 
 \section{Results}
 
@@ -174,14 +176,14 @@ Perplexity decreased from 856 at $k=2$ to 612 at $k=10$ (Figure \ref{fig:optimiz
 
 LDA identified nine thematic clusters (Table \ref{tab:topics}, Figure \ref{fig:wordclouds}). The distribution revealed three dominant themes accounting for 61.7\% of the corpus, four moderate themes (31.0\%), and two smaller specialized areas (7.0\%).
 
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Nine topics identified via LDA with top terms and corpus prevalence.}
 \label{tab:topics}
-\small
-\begin{tabular}{@{}p{0.15\textwidth}p{0.5\textwidth}cc@{}}
+\scriptsize
+\begin{tabular}{@{}p{0.15\textwidth}p{0.45\textwidth}cc@{}}
 \toprule
-Topic Label & Top 10 Terms & Documents & Prevalence \\
+Topic Label & Top 10 Terms & Docs & Prev. \\
 \midrule
 Inquiry-Based Science Education & design, outcome, experi, activ, differ, practic, inquiri, process, engag, support & 88 & 27.4\% \\
 Environmental Education & think, integr, skill, critic, enhanc, technolog, develop, effect, challeng, tool & 78 & 24.3\% \\
@@ -189,16 +191,16 @@ STEM Integration & group, effect, experiment, achiev, signific, academ, control,
 Teacher Professional Development & curriculum, framework, compet, evalu, context, issu, sustain, global, goal, discuss & 29 & 9.0\% \\
 Technology-Enhanced Learning & review, studi, valid, identifi, includ, assess, instrument, systemat, literatur, gap & 20 & 6.2\% \\
 Assessment \& Evaluation & model, instruct, classroom, develop, implement, understand, practic, languag, learner, lesson & 20 & 6.2\% \\
-Equity \& Social Justice & ', skill, assess, attitud, cours, test, interest, reason, abil, understand & 20 & 6.2\% \\
+Equity \& Social Justice & skill, assess, attitud, cours, test, interest, reason, abil, understand & 20 & 6.2\% \\
 Scientific Literacy & stem, program, develop, engin, comput, mathemat, model, integr, compet, profession & 20 & 6.2\% \\
 Conceptual Understanding & compet, knowledg, literaci, content, preservic, argument, level, question, focus, analyz & 14 & 4.4\% \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/tematicas/03_wordclouds_por_topic.png}
+\includegraphics[width=0.95\textwidth]{figuras/03_wordclouds_por_topic.png}
 \caption{Word clouds for nine topics. Font size represents term probability within each topic.}
 \label{fig:wordclouds}
 \end{figure}
@@ -238,21 +240,21 @@ The smallest topic addresses misconceptions, conceptual change, and deep content
 
 Temporal analysis revealed dramatic shifts in thematic emphasis (Figure \ref{fig:heatmap}, Table \ref{tab:temporal}). Environmental Education exhibited exponential growth from 3 documents (2021) to 41 documents (2025), increasing its share from 11\% to 79\% of annual publications. This surge reflects heightened global attention to climate change and sustainability following international agreements and youth climate movements.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/tematicas/01_topics_heatmap_temporal.png}
+\includegraphics[width=\textwidth]{figuras/01_topics_heatmap_temporal.png}
 \caption{Heatmap of topic prevalence by year (2016--2026). Color intensity represents document count. Environmental Education shows dramatic post-2020 growth.}
 \label{fig:heatmap}
 \end{figure}
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Topic prevalence by year (selected years).}
 \label{tab:temporal}
 \scriptsize
 \begin{tabular}{@{}lcccccccccc@{}}
 \toprule
-Year & Inquiry & Environ. & STEM & Teacher & Tech & Assess. & Equity & Sci. Lit. & Concept. \\
+Year & Inq & Env & STEM & Teach & Tech & Assess & Equity & Sci Lit & Concept \\
 \midrule
 2016 & 4 & 0 & 3 & 0 & 0 & 4 & 1 & 1 & 1 \\
 2018 & 5 & 0 & 3 & 0 & 0 & 1 & 0 & 2 & 0 \\
@@ -272,9 +274,9 @@ STEM Integration showed moderate growth, increasing from 1--3 documents (2016--2
 
 Alluvial diagrams (Figure \ref{fig:alluvial}) visualized thematic flows across time periods (2000--2008, 2009--2016, 2017--2025). The dominant transition involved Environmental Education's emergence as the primary focus post-2020, absorbing research attention previously distributed across multiple topics. Inquiry-Based Science Education maintained steady flows across all periods, while STEM Integration showed increasing prominence in the most recent period.
 
-\begin{figure}[h]
+\begin{figure}[htbp]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/tematicas/02_topics_alluvial_evolution.png}
+\includegraphics[width=\textwidth]{figuras/02_topics_alluvial_evolution.png}
 \caption{Alluvial diagram showing thematic evolution across three time periods. Width represents document count; flows show thematic transitions.}
 \label{fig:alluvial}
 \end{figure}
@@ -283,9 +285,9 @@ Alluvial diagrams (Figure \ref{fig:alluvial}) visualized thematic flows across t
 
 Linear regression quantified temporal trends (Figure \ref{fig:timeline}). Environmental Education exhibited the strongest positive slope ($\beta = 3.8$, $p < 0.001$), followed by Teacher Professional Development ($\beta = 0.6$, $p = 0.02$) and STEM Integration ($\beta = 0.5$, $p = 0.03$). These represent emerging or rapidly growing research areas.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/tematicas/05_trend_topics_timeline.png}
+\includegraphics[width=\textwidth]{figuras/05_trend_topics_timeline.png}
 \caption{Topic trends over time (2016--2026). Line width represents document count. Environmental Education shows exponential growth.}
 \label{fig:timeline}
 \end{figure}
@@ -294,25 +296,18 @@ Inquiry-Based Science Education showed near-zero slope ($\beta = 0.1$, $p = 0.45
 
 Technology-Enhanced Learning, Assessment, and Equity showed slight positive trends ($\beta = 0.3$--$0.4$) that did not reach statistical significance, possibly reflecting integration across other topics rather than standalone growth.
 
+\FloatBarrier
+
 \subsection{Geographic Variation in Thematic Focus}
 
-Country-level analysis (15 countries with $\geq 10$ documents) revealed thematic specialization (Figure \ref{fig:geography}, Table \ref{tab:countries}). The United States (35 documents) demonstrated balanced coverage across Inquiry-Based Science Education (25\%), Environmental Education (23\%), and STEM Integration (17\%). Germany (29 documents) concentrated on Environmental Education (48\%), reflecting strong national sustainability policies and curricula. Turkey (19 documents) emphasized Inquiry-Based Science Education (42\%), aligning with recent curriculum reforms promoting student-centered pedagogy.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.9\textwidth]{../outputs/figuras/tematicas/06_distribucion_geografica.png}
-\caption{Geographic distribution of research output and thematic specialization.}
-\label{fig:geography}
-\end{figure}
-
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Top 5 countries with thematic emphasis (percentage of country's publications).}
 \label{tab:countries}
 \small
 \begin{tabular}{@{}lcccc@{}}
 \toprule
-Country & Documents & Primary Topic & Secondary Topic & Tertiary Topic \\
+Country & Docs & Primary Topic & Secondary Topic & Tertiary Topic \\
 \midrule
 United States & 35 & Inquiry (25\%) & Environmental (23\%) & STEM (17\%) \\
 Germany & 29 & Environmental (48\%) & Inquiry (21\%) & Teacher Dev. (14\%) \\
@@ -323,25 +318,32 @@ Spain & 12 & Environmental (42\%) & Equity (25\%) & Inquiry (17\%) \\
 \end{tabular}
 \end{table}
 
-China (18 documents) specialized in Technology-Enhanced Learning (33\%) and STEM Integration (28\%), reflecting national investment in educational technology infrastructure. Spain (12 documents) emphasized Environmental Education (42\%) and Equity \& Social Justice (25\%), aligning with European Union priorities.
+Country-level analysis of the most productive nations (15 countries with $\geq 10$ documents) revealed significant thematic specialization that reflects distinct national priorities and regional policy frameworks (Figure \ref{fig:geography}, Table \ref{tab:countries}). The United States (35 documents) demonstrated a highly diversified and balanced coverage across Inquiry-Based Science Education (25\%), Environmental Education (23\%), and STEM Integration (17\%), suggesting a mature research ecosystem that addresses multiple pedagogical and societal challenges simultaneously. Germany (29 documents) showed a marked concentration on Environmental Education (48\%), a trend that directly reflects robust national sustainability policies and the long-standing integration of ecological literacy within the German secondary curricula. Turkey (19 documents) emphasized Inquiry-Based Science Education (42\%), closely aligning with recent national curriculum reforms that promote a transition from traditional instruction toward student-centered, constructivist methodologies. China (18 documents) specialized heavily in Technology-Enhanced Learning (33\%) and STEM Integration (28\%), mirroring massive strategic investments in digital educational infrastructure and a state-led push for scientific and technological competitiveness. Finally, Spain (12 documents) prioritized Environmental Education (42\%) and Equity \& Social Justice (25\%), reflecting a research agenda heavily influenced by European Union mandates regarding inclusive education and the transition toward a green economy.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/06_distribucion_geografica.png}
+\caption{Geographic distribution of research output and thematic specialization.}
+\label{fig:geography}
+\end{figure}
 
 Regional patterns emerged: European countries (Germany, Spain, Finland, Norway, Netherlands) concentrated on Environmental Education and Equity; East Asian countries (China, Taiwan, Thailand) emphasized Technology and STEM Integration; North America (United States) maintained balanced portfolios.
 
+\FloatBarrier
 \subsection{Keyword Co-occurrence and Conceptual Bridges}
 
-Keyword co-occurrence analysis (Figure \ref{fig:keywords}) validated LDA findings while revealing cross-topic bridges. Central keywords with high betweenness centrality included "inquiry-based learning" (bridging Topics 1, 3, 6), "sustainability" (connecting Topics 2, 7, 8), and "STEM education" (linking Topics 3, 8, 9).
+Keyword co-occurrence analysis (Figure \ref{fig:keywords}) validated LDA findings while revealing cross-topic bridges. Central keywords with high betweenness centrality included ``inquiry-based learning'' (bridging Topics 1, 3, 6), ``sustainability'' (connecting Topics 2, 7, 8), and ``STEM education'' (linking Topics 3, 8, 9). Community detection identified clusters aligning with LDA topics but also revealing interdisciplinary connections: ``technology integration'' appeared in three communities (Technology-Enhanced Learning, STEM Integration, Inquiry-Based Education), indicating its cross-cutting role. ``Assessment'' bridged Assessment \& Evaluation with Inquiry-Based Education and Conceptual Understanding, reflecting formative assessment's integration across pedagogical approaches.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/tematicas/04_keywords_cooccurrence_network.png}
+\includegraphics[width=0.9\textwidth]{figuras/04_keywords_cooccurrence_network.png}
 \caption{Keyword co-occurrence network (degree $\geq$ 3). Node size represents keyword frequency; color indicates community membership. Bridges connect thematic clusters.}
 \label{fig:keywords}
 \end{figure}
 
-Community detection identified clusters aligning with LDA topics but also revealing interdisciplinary connections: "technology integration" appeared in three communities (Technology-Enhanced Learning, STEM Integration, Inquiry-Based Education), indicating its cross-cutting role. "Assessment" bridged Assessment \& Evaluation with Inquiry-Based Education and Conceptual Understanding, reflecting formative assessment's integration across pedagogical approaches.
+Peripheral keywords represented niche or emerging concepts: ``argumentation,'' ``modeling,'' ``culturally responsive teaching,'' ``computational thinking.'' These warrant attention as potential growth areas.
 
-Peripheral keywords represented niche or emerging concepts: "argumentation," "modeling," "culturally responsive teaching," "computational thinking." These warrant attention as potential growth areas.
-
+\FloatBarrier
 \section{Discussion}
 
 \subsection{Thematic Structure and Foundational Domains}
@@ -378,9 +380,9 @@ Geographic concentration in North America, Europe, and East Asia leaves substant
 
 Keyword co-occurrence analysis reveals natural sciences education as an integrative field rather than fragmented specializations. Bridging concepts (inquiry-based learning, technology integration, assessment, sustainability) connect multiple topics, facilitating knowledge transfer across domains. This integration distinguishes mature fields from emerging areas characterized by isolated subfields.
 
-The centrality of "inquiry-based learning" demonstrates its role as a unifying pedagogical philosophy spanning environmental education, STEM integration, and technology-enhanced learning. Similarly, "assessment" bridges multiple domains, reflecting recognition that measurement rigor supports all research questions.
+The centrality of ``inquiry-based learning'' demonstrates its role as a unifying pedagogical philosophy spanning environmental education, STEM integration, and technology-enhanced learning. Similarly, ``assessment'' bridges multiple domains, reflecting recognition that measurement rigor supports all research questions.
 
-Peripheral keywords represent innovation frontiers: "argumentation" and "modeling" reflect science practice emphases in recent standards \cite{NGSS2013}, while "computational thinking" signals integration of computer science into natural sciences. These concepts' peripheral position suggests emerging rather than established status---monitoring their movement toward network centers could signal paradigm shifts.
+Peripheral keywords represent innovation frontiers: ``argumentation'' and ``modeling'' reflect science practice emphases in recent standards \cite{NGSS2013}, while ``computational thinking'' signals integration of computer science into natural sciences. These concepts' peripheral position suggests emerging rather than established status---monitoring their movement toward network centers could signal paradigm shifts.
 
 \subsection{Knowledge Gaps and Underexplored Areas}
 
@@ -400,27 +402,16 @@ Analysis reveals five critical knowledge gaps:
 
 This study demonstrates LDA's utility for large-scale education research synthesis. Compared to traditional narrative reviews, LDA offers scalability (analyzing hundreds of documents), objectivity (data-driven topic detection), and replicability (transparent algorithms). The methodology is transferable to other education domains (mathematics education, social studies education, teacher education) or interdisciplinary fields.
 
-However, limitations warrant acknowledgment. LDA assumes topics are static over time, whereas concepts evolve semantically---"technology integration" meant different things in 2000 (desktop computers) versus 2025 (AI, VR). Dynamic topic models \cite{Blei2006} could capture this evolution but require larger datasets. Optimal $k$ selection involves subjective judgment despite quantitative metrics; $k=9$ balanced fit and interpretability, but alternative values might reveal different structures. Abstracts provide thematic information but lack full-text depth---analyzing complete articles would enrich topic characterization. Finally, English-language restriction excludes substantial regional scholarship in Spanish, Chinese, and other languages.
+However, limitations warrant acknowledgment. LDA assumes topics are static over time, whereas concepts evolve semantically---``technology integration'' meant different things in 2000 (desktop computers) versus 2025 (AI, VR). Dynamic topic models \cite{Blei2006} could capture this evolution but require larger datasets. Optimal $k$ selection involves subjective judgment despite quantitative metrics; $k=9$ balanced fit and interpretability, but alternative values might reveal different structures. Abstracts provide thematic information but lack full-text depth---analyzing complete articles would enrich topic characterization. Finally, English-language restriction excludes substantial regional scholarship in Spanish, Chinese, and other languages.
 
 \section{Conclusions and Future Directions}
 
 This LDA analysis identified nine thematic clusters structuring natural sciences education research from 2000 to 2025: Inquiry-Based Science Education (27.4\%), Environmental Education (24.3\%), STEM Integration (10.0\%), Teacher Professional Development (9.0\%), Technology-Enhanced Learning (6.2\%), Assessment \& Evaluation (6.2\%), Equity \& Social Justice (6.2\%), Scientific Literacy (6.2\%), and Conceptual Understanding (4.4\%). Temporal analysis revealed Environmental Education's exponential growth post-2020, STEM Integration's steady expansion, and Inquiry-Based Education's stable foundational status. Geographic analysis demonstrated thematic specialization reflecting national policies and cultural contexts. Knowledge gaps include underrepresented equity research, limited longitudinal studies, and geographic concentration excluding Global South perspectives.
 
-\subsection{Implications for Stakeholders}
-
-\textbf{Researchers} should strategically position investigations within these thematic clusters. Entering saturated domains (Inquiry-Based Education, Environmental Education) requires novel angles or methodological innovation. Addressing knowledge gaps (Equity, Longitudinal Assessment) offers opportunities for high-impact contributions. Geographic diversification through international collaboration could illuminate context-specific challenges and solutions.
-
-\textbf{Funding agencies} should allocate resources addressing identified gaps. Targeted calls for equity-focused research, longitudinal studies, and Global South scholarship could rebalance the field. Supporting Environmental Education's momentum while ensuring foundational areas (Inquiry-Based Education, Assessment) maintain capacity prevents overconcentration.
-
-\textbf{Curriculum developers} can align materials with evidence-based pedagogies. Inquiry-based approaches, environmental sustainability integration, and STEM interdisciplinarity reflect well-supported directions. However, curriculum should also address underrepresented areas---explicit equity pedagogy, rigorous assessment practices, and conceptual depth.
-
-\textbf{Teacher educators} should prepare pre-service teachers for thematic priorities: inquiry pedagogy skills, environmental literacy, technology integration competencies, and culturally responsive practices. Professional development for in-service teachers requires parallel emphasis.
-
-\textbf{Journal editors} might identify niche opportunities. Specialized journals addressing Equity in Science Education, Longitudinal Science Education Research, or Global South Science Education Perspectives could fill gaps in the publication landscape.
 
 \subsection{Future Research Directions}
 
-\textbf{Methodological extensions} could employ dynamic topic modeling tracking semantic evolution, analyze full-text articles for deeper thematic extraction, or integrate multimodal data (images, videos from educational resources). Comparative topic modeling across education domains (natural sciences vs. mathematics vs. social studies) would illuminate field-specific characteristics versus universal patterns.
+\textbf{Methodological extensions} could employ dynamic topic modeling tracking semantic evolution, analyze full-text articles for deeper thematic extraction, or integrate multimodal data (images, videos from educational resources). Comparative topic modeling across education domains (natural sciences vs. mathematics vs. social studies) would illumin ate field-specific characteristics versus universal patterns.
 
 \textbf{Thematic priorities} should address knowledge gaps: equity and inclusion investigations, longitudinal learning trajectory studies, methodological diversification beyond quasi-experiments, and geographic expansion to underrepresented regions. Emerging concepts identified in keyword analysis (argumentation, computational thinking, culturally responsive teaching) warrant dedicated research programs.
 

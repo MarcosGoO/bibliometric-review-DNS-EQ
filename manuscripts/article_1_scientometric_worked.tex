@@ -19,6 +19,8 @@ top=20mm,
 \usepackage{hyperref}
 \usepackage{caption}
 \usepackage{subcaption}
+\usepackage[htt]{hyphenat}
+\usepackage{placeins}  % For \FloatBarrier
 
 \addbibresource{references.bib}
 
@@ -68,13 +70,13 @@ This investigation makes three primary contributions. First, it provides the fir
 
 Data were retrieved from Scopus and Web of Science, selected for their complementary coverage and quality control mechanisms. The search strategy targeted documents addressing natural sciences didactics, science education pedagogy, and STEM teaching methodologies. Search fields included Title, Abstract, and Keywords. Document types were restricted to peer-reviewed articles and reviews. The language filter limited results to English to ensure analytical consistency. The temporal span covered January 2000 through December 2025.
 
-Initial retrieval yielded 412 documents from Scopus and 387 from Web of Science. Merging employed the \texttt{bibliometrix} package's \texttt{mergeDbSources()} function \cite{Aria2017}, which applies duplicate detection algorithms based on DOI, title similarity, and author matching. After deduplication and quality control, the final dataset comprised 321 unique documents.
+Initial retrieval yielded 412 documents from Scopus and 387 from Web of Science. Merging employed the \texttt{biblio\-metrix} package's \texttt{merge\-Db\-Sources()} function \cite{Aria2017}, which applies duplicate detection algorithms based on DOI, title similarity, and author matching. After deduplication and quality control, the final dataset comprised 321 unique documents.
 
 \subsection{Data Processing and Quality Control}
 
 Quality diagnostics assessed field completeness across the 60 bibliographic fields extracted. Documents with missing critical fields (Authors, Title, Abstract, Publication Year) were excluded during preprocessing. Author name standardization addressed variations in formatting, while country affiliation normalization resolved inconsistencies in institutional metadata.
 
-Software implementation utilized R version 4.3.2 with \texttt{bibliometrix} version 4.1 \cite{Aria2017} for bibliometric analysis and \texttt{igraph} version 2.0 \cite{Csardi2006} for network operations. All visualizations employed \texttt{ggplot2} and \texttt{ggraph} for publication-quality graphics.
+Software implementation utilized R version 4.3.2 with \texttt{biblio\-metrix} version 4.1 \cite{Aria2017} for bibliometric analysis and \texttt{igraph} version 2.0 \cite{Csardi2006} for network operations. All visualizations employed \texttt{ggplot2} and \texttt{ggraph} for publication-quality graphics.
 
 \subsection{Scientometric Analysis Techniques}
 
@@ -92,11 +94,11 @@ Lotka's Law \cite{Lotka1926} describes author productivity distribution, typical
 
 \subsubsection{H-index and Citation Impact}
 
-The h-index \cite{Hirsch2005} quantifies both productivity and citation impact: a scholar has h-index $h$ if $h$ of their papers have at least $h$ citations. We calculated h-index, g-index, and m-index for the top 20 authors using \texttt{bibliometrix::Hindex()}. Most cited documents were ranked by total citations to identify foundational works.
+The h-index \cite{Hirsch2005} quantifies both productivity and citation impact: a scholar has h-index $h$ if $h$ of their papers have at least $h$ citations. We calculated h-index, g-index, and m-index for the top 20 authors using \texttt{biblio\-metrix::\allowbreak Hindex()}. Most cited documents were ranked by total citations to identify foundational works.
 
 \subsubsection{Collaboration Network Analysis}
 
-\textbf{Author Collaboration Network.} The author collaboration network was constructed using \texttt{biblioNetwork(analysis="collaboration", network="authors")}, producing a weighted undirected adjacency matrix where edge weights represent co-authorship frequency. To focus on prolific collaborators, we filtered authors with degree $\geq$ 3. Centrality metrics quantified structural positions:
+\textbf{Author Collaboration Network.} The author collaboration network was constructed using \texttt{biblio\-Network(\allowbreak analysis=\allowbreak"colla\-boration",\allowbreak network=\allowbreak"authors")}, producing a weighted undirected adjacency matrix where edge weights represent co-authorship frequency. To focus on prolific collaborators, we filtered authors with degree $\geq$ 3. Centrality metrics quantified structural positions:
 
 \begin{itemize}
 \item \textbf{Degree centrality}: Number of direct collaborators, indicating breadth of collaboration.
@@ -106,39 +108,40 @@ The h-index \cite{Hirsch2005} quantifies both productivity and citation impact: 
 
 Community detection employed the Louvain algorithm \cite{Blondel2008}, which maximizes modularity to identify densely connected clusters. Visualization used the Fruchterman-Reingold force-directed layout with node size proportional to degree and color representing community membership.
 
-\textbf{Country Collaboration Network.} Country-level analysis followed identical procedures using \texttt{biblioNetwork(network="countries")}, filtered to countries with degree $\geq$ 2. This revealed international research partnerships and geographic centrality. Visualization employed the Kamada-Kawai layout optimized for clarity.
+\textbf{Country Collaboration Network.} Country-level analysis followed identical procedures using \texttt{biblio\-Network(\allowbreak network=\allowbreak"countries")}, filtered to countries with degree $\geq$ 2. This revealed international research partnerships and geographic centrality.
 
-\textbf{Technical Note.} All \texttt{igraph} functions employed explicit namespace qualification (\texttt{igraph::degree()}, \texttt{igraph::betweenness()}, \texttt{igraph::closeness()}, \texttt{igraph::cluster\_louvain()}, \texttt{igraph::membership()}) to avoid namespace conflicts with \texttt{tidyverse} packages. Following \texttt{induced\_subgraph()} operations, vertex attributes were recalculated on the subgraph to ensure metric accuracy.
+\textbf{Technical Note.} All \texttt{igraph} functions employed explicit namespace qualification (\texttt{igraph::\allowbreak degree()}, \texttt{igraph::\allowbreak between\-ness()}, \texttt{igraph::\allowbreak close\-ness()}, \texttt{igraph::\allowbreak cluster\_\allowbreak louvain()}, \texttt{igraph::\allowbreak member\-ship()}) to avoid namespace conflicts with \texttt{tidy\-verse} packages. Following \texttt{induced\_\allowbreak sub\-graph()} operations, vertex attributes were recalculated on the subgraph to ensure metric accuracy.
 
 \subsubsection{Conceptual Structure}
 
-Keyword co-occurrence networks captured thematic relationships using \texttt{biblioNetwork(analysis="co-occurrences", network="keywords")}. Filtering retained keywords with degree $\geq$ 3 to focus on central concepts. Community detection identified thematic clusters, while centrality metrics revealed bridging concepts connecting multiple domains.
+Keyword co-occurrence networks captured thematic relationships using \texttt{biblio\-Network(\allowbreak analysis=\allowbreak"co-\allowbreak occur\-rences",\allowbreak network=\allowbreak"key\-words")}. Filtering retained keywords with degree $\geq$ 3 to focus on central concepts. Community detection identified thematic clusters, while centrality metrics revealed bridging concepts connecting multiple domains.
 
 \section{Results}
 
 \subsection{Publication Trends and Landscape}
 
-Figure \ref{fig:production} presents annual publication trends from 2000 to 2025. The field exhibited exponential growth, particularly post-2015, with publications increasing from 14 in 2016 to 52 in 2025. This acceleration coincides with international STEM education policy initiatives and increased research funding. Document type analysis (Figure \ref{fig:doctypes}) revealed 94\% research articles and 6\% reviews, indicating an empirically driven field with emerging synthetic scholarship.
+The field exhibited exponential growth, particularly post-2015, with publications increasing from 14 in 2016 to 52 in 2025 (Figure \ref{fig:production}). This acceleration coincides with international STEM education policy initiatives and increased research funding. Document type analysis (Figure \ref{fig:doctypes}) revealed 94\% research articles and 6\% reviews, indicating an empirically driven field with emerging synthetic scholarship.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.8\textwidth]{../outputs/figuras/01_produccion_anual.png}
+\includegraphics[width=0.8\textwidth]{figuras/01_produccion_anual.png}
 \caption{Annual publication trends (2000--2025) showing exponential growth post-2015.}
 \label{fig:production}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=0.7\textwidth]{../outputs/figuras/02_tipos_documento.png}
+\includegraphics[width=0.7\textwidth]{figuras/02_tipos_documento.png}
 \caption{Document type distribution: 94\% articles, 6\% reviews.}
 \label{fig:doctypes}
 \end{figure}
 
+\FloatBarrier
 \subsection{Core Journals and Bradford's Law}
 
 Bradford's Law partitioned 156 journals into three zones (Table \ref{tab:bradford}). The core zone (Zone 1) comprised 12 journals producing 107 articles (33\% of total), demonstrating significant concentration. \textit{International Journal of Science Education} dominated with 19 publications, followed by \textit{Education Sciences} (15) and \textit{Frontiers in Education} (13). These journals represent the field's intellectual core and primary dissemination channels.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Bradford's Law zones: Core journals (top 12 shown).}
 \label{tab:bradford}
@@ -163,13 +166,20 @@ Rank & Journal & Articles & Cumulative & Zone \\
 \end{tabular}
 \end{table}
 
-The middle zone (Zone 2, 40 journals) and peripheral zone (Zone 3, 104 journals) accounted for 67\% of publications, indicating broad disciplinary engagement beyond the concentrated core. This distribution aligns with theoretical expectations for mature scientific fields.
+The middle zone (Zone 2, 40 journals) and peripheral zone (Zone 3, 104 journals) accounted for 67\% of publications, indicating broad disciplinary engagement beyond the concentrated core. This distribution aligns with theoretical expectations for mature scientific fields. Figure \ref{fig:bradford} visualizes the three-zone structure.
 
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/03_bradford_law.png}
+\caption{Bradford's Law zones showing article distribution across core, middle, and peripheral journals.}
+\label{fig:bradford}
+\end{figure}
+
+\FloatBarrier
 \subsection{Author Productivity and Lotka's Law}
+Lotka's Law analysis revealed an extreme concentration of productivity within the dataset, as detailed in Table \ref{tab:lotka}. Of the 1,247 unique authors identified, a substantial 89.1\% contributed exactly one document, while only 8.7\% published two. Authors with three or more publications—the "prolific core"—constituted a mere 2.2\% of the total population. This distribution exceeds typical Lotka coefficients ($n \approx 2$), indicating a higher degree of output inequality than is usually observed in established scientific disciplines. Such a stark imbalance suggests that the field of natural sciences education research is heavily characterized by transient contributions—potentially from doctoral students or practitioners conducting one-off studies; rather than being driven by long-term, sustained research programs.
 
-Lotka's Law analysis revealed extreme productivity concentration (Table \ref{tab:lotka}). Of 1,247 unique authors, 89.1\% published exactly one document, while only 8.7\% published two. Authors with three or more publications constituted just 2.2\% of the total. This distribution exceeds typical Lotka coefficients, suggesting natural sciences education research is characterized by transient contributions rather than sustained programs.
-
-\begin{table}[h]
+\begin{table}[!ht]
 \centering
 \caption{Author productivity distribution (Lotka's Law).}
 \label{tab:lotka}
@@ -186,13 +196,22 @@ Documents per Author & Number of Authors & Percentage \\
 \end{tabular}
 \end{table}
 
-The small cohort of prolific authors (3+ publications) likely represents established research programs with sustained funding and graduate student pipelines. The predominance of single-publication authors may reflect dissertation-based research, exploratory studies, or cross-disciplinary scholars contributing occasional work.
+The small cohort of prolific authors (3+ publications) likely represents established research programs with sustained funding and graduate student pipelines. The predominance of single-publication authors may reflect dissertation-based research, exploratory studies, or cross-disciplinary scholars contributing occasional work. Figure \ref{fig:lotka} illustrates this distribution visually.
+
+\begin{figure}[!ht]
+\centering
+\includegraphics[width=0.85\textwidth]{figuras/04_lotka_law.png}
+\caption{Lotka's Law distribution showing extreme concentration in single-publication authors.}
+\label{fig:lotka}
+\end{figure}
+
+\FloatBarrier
 
 \subsection{Citation Impact and H-index}
 
 H-index analysis identified leading scholars (Table \ref{tab:hindex}). The highest h-index was 2, achieved by two authors (ACUT D and AKGUNDUZ D), indicating that even top contributors have modest sustained impact within this specific corpus. This reflects the dataset's temporal scope and specialized focus rather than diminished scholarly quality---many authors maintain higher h-indices across broader publication records.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Top 10 authors by h-index.}
 \label{tab:hindex}
@@ -217,22 +236,23 @@ AKTAS I & 1 & 1 & 0.50 & 1 & 1 \\
 
 Citation analysis of the most cited individual works revealed foundational contributions addressing inquiry-based learning frameworks, technology integration in laboratory settings, and assessment instrument development. These papers structure the knowledge base by providing methodological templates and theoretical foundations.
 
+\FloatBarrier
 \subsection{Collaboration Networks}
 
 \subsubsection{Author Collaboration Network}
 
 The author collaboration network (Figure \ref{fig:authornet}) comprised 847 nodes (authors) and 1,203 edges after filtering to degree $\geq$ 3. Network density was 0.003, indicating sparse overall connectivity with concentrated clusters. Average degree was 2.84, with maximum degree 12, identifying highly connected scholars.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/redes/01_author_collaboration_network.png}
-\caption{Author collaboration network (degree $\geq$ 3). Node size represents degree centrality; color indicates community membership.}
+\includegraphics[width=0.95\textwidth]{figuras/01_author_collaboration_network.png}
+\caption{Author collaboration network (degree $\geq$ 3). Node size represents degree centrality; colors indicate community membership detected via Louvain algorithm.}
 \label{fig:authornet}
 \end{figure}
 
 Centrality analysis (Table \ref{tab:authormetrics}) identified key structural positions. Authors with high betweenness centrality function as knowledge brokers, bridging otherwise disconnected research groups. Those with high degree centrality anchor large collaborative teams. Closeness centrality identifies scholars with efficient reach across the network.
 
-\begin{table}[h]
+\begin{table}[htbp]
 \centering
 \caption{Top authors by network centrality metrics.}
 \label{tab:authormetrics}
@@ -260,19 +280,21 @@ International collaboration proved more prevalent than individual-level partners
 
 Regional clusters emerged, with strong European networks (Germany--Netherlands--Finland), East Asian collaborations (China--Taiwan--Thailand), and North American linkages (United States--Canada). These patterns reflect geographic proximity, language affinity, and bilateral research agreements.
 
+\FloatBarrier
 \subsection{Conceptual Structure}
 
-Keyword co-occurrence analysis (Figure \ref{fig:keywords}) revealed the field's conceptual architecture. Central keywords included "inquiry-based learning," "STEM education," "technology integration," and "assessment." These concepts exhibited high betweenness centrality, serving as bridges between disciplinary clusters.
+Keyword co-occurrence analysis (Figure \ref{fig:keywords}) revealed the field's conceptual architecture. Central keywords included ``inquiry-based learning,'' ``STEM education,'' ``technology integration,'' and ``assessment.'' These concepts exhibited high betweenness centrality, serving as bridges between disciplinary clusters.
 
-\begin{figure}[h]
+\begin{figure}[!ht]
 \centering
-\includegraphics[width=\textwidth]{../outputs/figuras/redes/07_conceptual_structure_keywords.png}
-\caption{Keyword co-occurrence network (degree $\geq$ 3). Node size indicates keyword frequency; communities represent thematic clusters.}
+\includegraphics[width=0.95\textwidth]{figuras/07_conceptual_structure_keywords.png}
+\caption{Keyword co-occurrence network (degree $\geq$ 3). Node size indicates keyword frequency; colors represent thematic communities identified via Louvain algorithm.}
 \label{fig:keywords}
 \end{figure}
 
 Community detection identified four thematic clusters: (1) pedagogical approaches (inquiry, constructivism, hands-on learning), (2) technology integration (simulations, virtual labs, educational software), (3) assessment and evaluation (formative assessment, concept inventories, rubrics), and (4) teacher development (professional development, pedagogical content knowledge, pre-service training). The interconnection of these clusters demonstrates natural sciences education's integrated nature, combining pedagogical theory, technological tools, assessment practices, and teacher preparation.
 
+\FloatBarrier
 \section{Discussion}
 
 \subsection{Publication Trends and Field Maturation}
@@ -305,7 +327,7 @@ The central positions of the United States, Germany, and China reflect research 
 
 Keyword co-occurrence analysis demonstrates natural sciences education's integrative character. Unlike discipline-specific education research (e.g., chemistry education), this field bridges multiple knowledge domains: pedagogical theory (constructivism, inquiry), technology (simulations, virtual labs), assessment science (formative feedback, concept inventories), and teacher development (pedagogical content knowledge).
 
-The central position of "inquiry-based learning" validates constructivist pedagogy's foundational role. "Technology integration" and "STEM education" reflect contemporary trends, while "assessment" demonstrates growing emphasis on measurement rigor. The interconnection of these concepts suggests successful synthesis rather than siloed specialization.
+The central position of ``inquiry-based learning'' validates constructivist pedagogy's foundational role. ``Technology integration'' and ``STEM education'' reflect contemporary trends, while ``assessment'' demonstrates growing emphasis on measurement rigor. The interconnection of these concepts suggests successful synthesis rather than siloed specialization.
 
 \subsection{Limitations}
 
@@ -314,16 +336,6 @@ Several limitations warrant acknowledgment. First, Scopus and Web of Science cov
 \section{Conclusions and Future Directions}
 
 This scientometric analysis establishes the structural characteristics of natural sciences education research from 2000 to 2025. The field exhibits exponential growth, concentrated journal dissemination (12 core journals), extreme author productivity concentration (89\% single publications), and structured international collaboration networks. Citation analysis and keyword co-occurrence reveal an integrative domain bridging pedagogical theory, technology, assessment, and teacher development.
-
-\subsection{Implications for Stakeholders}
-
-\textbf{Researchers} benefit from identifying collaboration opportunities (network analysis), high-impact publication venues (Bradford's Law), and citation standards (h-index benchmarks). Early-career scholars can strategically position themselves within communities and target core journals for manuscript submission.
-
-\textbf{Funding agencies} gain evidence for resource allocation. The concentration of productivity among 2.2\% of authors suggests supporting established research programs yields disproportionate output. However, encouraging sustained engagement from the 89\% single-publication authors could broaden the field's intellectual base.
-
-\textbf{Journal editors} can benchmark against core journals' quality standards and identify gaps for niche publications. The thematic clusters suggest opportunities for specialized journals addressing technology integration or assessment methodologies.
-
-\textbf{Policymakers} should note international collaboration patterns. The United States--Germany--China triad dominates, but strengthening partnerships with underrepresented regions could diversify perspectives and address global education challenges.
 
 \subsection{Future Research Directions}
 
