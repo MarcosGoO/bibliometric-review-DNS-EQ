@@ -4,14 +4,14 @@
 .RData
 .Ruserdata
 
-# Documentation interna (no publicar en GitHub)
+# Documentation interna
 INSTRUCTIONS_REDACTATION.txt
 .RDataTmp
 
 # md files (opcional, descomentar si no quieres incluir archivos markdown)
-instructions (md)/*.md
+instructions (md)/
 
-#reviews
+#reviews (literature)
 literature_reviews/
 
 # Claude Code artifacts
@@ -25,12 +25,3 @@ Thumbs.db
 *.tmp
 *.bak
 *~
-
-#mnuscripts files
-
-
-
-
-# Large data files (opcional, descomentar si quieres excluir datos grandes)
-# outputs/*.csv
-# data/processed/*.rds
