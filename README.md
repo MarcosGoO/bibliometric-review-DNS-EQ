@@ -1,4 +1,4 @@
-# Bibliometric Analysis: Science Education & Educational Quality (2016-2026)
+# Bibliometric Analysis (2016-2026)
 
 [![R](https://img.shields.io/badge/R-4.0%2B-blue.svg)](https://www.r-project.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
