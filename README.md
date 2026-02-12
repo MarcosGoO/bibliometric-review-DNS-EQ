@@ -139,17 +139,11 @@ Educational Quality: A Bibliometric Analysis (2016-2026).
 
 ---
 
-## License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
 ## 👤 Author
 
 **Marcos Elías Gómez Osorio**
-- 📧 Email: [[Email](marcoseliasgom@gmail.com)]
-- 🔗 LinkedIn: [[Your LinkedIn](https://www.linkedin.com/in/marcos-g%C3%B3mez-659b0938a/)]
+- 📧 Email: marcoseliasgom@gmail.com
+- 🔗 LinkedIn: https://www.linkedin.com/in/marcos-g%C3%B3mez-659b0938a/
 
 ---
 
